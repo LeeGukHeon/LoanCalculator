@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import {
   calculateEqualPayment,
   calculateEqualPrincipal,
@@ -78,6 +79,9 @@ function ComparePage() {
         <h2>📊 상환방식 비교</h2>
         <p>4가지 상환 방식을 한눈에 비교하세요</p>
       </div>
+
+      {/* 상단 광고: 높은 주목도 */}
+      <AdSense slot="1010101010" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -168,6 +172,33 @@ function ComparePage() {
           <div className="result-section">
             <h3>상환 방식 비교 결과</h3>
 
+            {/* 스마트 분석 리포트 (SEO 및 체류시간 증대) */}
+            <div
+              className="seo-summary"
+              style={{
+                background: "#e3f2fd",
+                padding: "1rem",
+                borderRadius: "8px",
+                marginBottom: "1.5rem",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+            >
+              <p>
+                <strong>분석 결과:</strong> 가장 이자가 적은 방식은{" "}
+                <strong>'원금균등'</strong>이며, 가장 일반적인 '원리금균등'
+                방식보다 총 이자{" "}
+                <strong>
+                  {formatCurrency(
+                    results.equalPayment.totalInterest -
+                      results.equalPrincipal.totalInterest,
+                  )}
+                </strong>
+                을 절약할 수 있습니다. 다만, 초기 월 상환액 부담은 원금균등
+                방식이 더 큽니다.
+              </p>
+            </div>
+
             <div className="comparison-table-wrapper">
               <table className="comparison-table">
                 <thead>
@@ -248,6 +279,9 @@ function ComparePage() {
               </table>
             </div>
 
+            {/* 중간 광고: 표 확인 후 상세 설명 보기 전 (클릭률 높음) */}
+            <AdSense slot="2020202020" label="Middle Banner" />
+
             {/* 각 방식 특징 */}
             <div className="comparison-cards">
               <div className="comparison-card">
@@ -322,6 +356,9 @@ function ComparePage() {
           </div>
         )}
       </div>
+
+      {/* 하단 광고 */}
+      <AdSense slot="3030303030" label="Bottom Banner" />
     </main>
   );
 }

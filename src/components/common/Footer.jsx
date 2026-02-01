@@ -1,9 +1,39 @@
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
+        {/* 법적 링크 추가 */}
+        <div
+          className="footer-links"
+          style={{
+            display: "flex",
+            gap: "1.5rem",
+            justifyContent: "center",
+            marginBottom: "1.5rem",
+            fontSize: "0.9rem",
+          }}
+        >
+          <Link to="/terms" style={{ color: "#666", textDecoration: "none" }}>
+            이용약관
+          </Link>
+          <Link
+            to="/privacy"
+            style={{
+              color: "#666",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            개인정보처리방침
+          </Link>
+          <Link to="/contact" style={{ color: "#666", textDecoration: "none" }}>
+            문의하기
+          </Link>
+        </div>
+
         <div className="footer-disclaimer">
           <p>
             본 사이트는 대출 이자 계산 도구를 제공하는 정보 사이트입니다. 대출
@@ -15,9 +45,6 @@ function Footer() {
         </div>
         <p className="footer-copy">
           &copy; 2026 대출 이자 계산기. All rights reserved.
-        </p>
-        <p className="footer-info">
-          본 사이트는 교육 및 정보 제공 목적으로 운영됩니다.
         </p>
       </div>
     </footer>

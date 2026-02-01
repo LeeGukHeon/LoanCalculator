@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
 import ResultCard from "../components/calculator/ResultCard";
 import PaymentTable from "../components/calculator/PaymentTable";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import {
   calculateEqualPayment,
   calculateEqualPrincipal,
@@ -39,10 +40,11 @@ function MortgagePage() {
   const [hasSubscription, setHasSubscription] = useState(false);
   const [isElectronic, setIsElectronic] = useState(false);
 
-  // 대출 조건 (억원 단위)
+  // 대출 조건
   const [loanAmountInput, setLoanAmountInput] = useState("3"); // 3억
   const [interestRate, setInterestRate] = useState("4.5");
   const [loanPeriod, setLoanPeriod] = useState("360");
+  const [gracePeriod, setGracePeriod] = useState("0"); // 거치 기간 (년) - 신규 추가
   const [repaymentType, setRepaymentType] = useState("equal");
 
   // 계산 결과
@@ -117,11 +119,12 @@ function MortgagePage() {
     isElectronic,
   ]);
 
-  // 상환 시뮬레이션 계산
+  // 상환 시뮬레이션 계산 (거치기간 적용)
   useEffect(() => {
     const principal = loanAmount;
     const rate = finalRate;
     const months = parseInt(loanPeriod) || 0;
+    const graceYears = parseInt(gracePeriod) || 0; // 거치 기간
 
     if (principal <= 0 || rate < 0 || months <= 0) {
       setPaymentResult(null);
@@ -130,10 +133,21 @@ function MortgagePage() {
 
     let calculationResult;
 
+    // 거치기간(graceYears)을 지원하는 함수에 인자 전달
     if (repaymentType === "equal") {
-      calculationResult = calculateEqualPayment(principal, rate, months);
+      calculationResult = calculateEqualPayment(
+        principal,
+        rate,
+        months,
+        graceYears,
+      );
     } else if (repaymentType === "equalPrincipal") {
-      calculationResult = calculateEqualPrincipal(principal, rate, months);
+      calculationResult = calculateEqualPrincipal(
+        principal,
+        rate,
+        months,
+        graceYears,
+      );
     } else if (repaymentType === "increasing") {
       calculationResult = calculateIncreasingPayment(principal, rate, months);
     } else if (repaymentType === "bullet") {
@@ -141,14 +155,17 @@ function MortgagePage() {
     }
 
     setPaymentResult(calculationResult);
-  }, [loanAmount, finalRate, loanPeriod, repaymentType]);
+  }, [loanAmount, finalRate, loanPeriod, repaymentType, gracePeriod]);
 
   return (
     <main className="main">
       <div className="page-header">
         <h2>🏠 주택담보대출 계산기</h2>
-        <p>2026년 최신 정책 반영 - LTV, DTI, DSR 자동 계산</p>
+        <p>2026년 최신 정책 반영 - LTV, DTI, DSR 및 거치기간 자동 계산</p>
       </div>
+
+      {/* 상단 광고: 페이지 제목 아래 높은 주목도 */}
+      <AdSense slot="1234567890" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -383,7 +400,7 @@ function MortgagePage() {
 
         {/* 대출 조건 입력 */}
         <div className="input-section">
-          <h3>대출 조건</h3>
+          <h3>대출 조건 상세</h3>
 
           <LoanInput
             label="대출 금액"
@@ -462,6 +479,25 @@ function MortgagePage() {
             )}
           </div>
 
+          {/* 거치 기간 (신규 기능) */}
+          <div className="loan-input">
+            <label className="loan-input-label">거치 기간 (이자만 납부)</label>
+            <select
+              value={gracePeriod}
+              onChange={(e) => setGracePeriod(e.target.value)}
+              className="loan-select"
+            >
+              <option value="0">없음</option>
+              <option value="1">1년</option>
+              <option value="2">2년</option>
+              <option value="3">3년</option>
+              <option value="5">5년</option>
+            </select>
+            <div className="info-text">
+              💡 거치기간 동안은 원금 상환 없이 이자만 납부합니다.
+            </div>
+          </div>
+
           <div className="loan-input">
             <label className="loan-input-label">상환 방식</label>
             <div className="repayment-type-buttons">
@@ -497,6 +533,30 @@ function MortgagePage() {
         {paymentResult && (
           <div className="result-section">
             <h3>상환 시뮬레이션</h3>
+
+            {/* SEO 최적화 및 사용자 요약 (신규) */}
+            <div
+              className="seo-summary"
+              style={{
+                background: "#e3f2fd",
+                padding: "1rem",
+                borderRadius: "8px",
+                marginBottom: "1.5rem",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+            >
+              <p>
+                고객님이 신청하신 <strong>{formatCurrency(loanAmount)}</strong>{" "}
+                대출에 대해 <strong>{parseInt(loanPeriod) / 12}년</strong> 동안
+                금리 <strong>{finalRate}%</strong>로 상환할 경우, 총 납부해야 할
+                이자는{" "}
+                <strong>{formatCurrency(paymentResult.totalInterest)}</strong>
+                입니다.
+                {parseInt(gracePeriod) > 0 &&
+                  ` 초기 ${gracePeriod}년 동안은 거치기간으로 설정되어 이자만 납부하게 됩니다.`}
+              </p>
+            </div>
 
             <div className="result-cards">
               {repaymentType === "equal" && (
@@ -546,10 +606,16 @@ function MortgagePage() {
               <ResultCard title="총 이자" value={paymentResult.totalInterest} />
             </div>
 
+            {/* 중간 광고: 결과 카드 확인 후 상세 내역 보기 전 클릭률 높은 위치 */}
+            <AdSense slot="0987654321" label="Middle Banner" />
+
             <PaymentTable schedule={paymentResult.schedule} />
           </div>
         )}
       </div>
+
+      {/* 하단 광고 */}
+      <AdSense slot="1122334455" label="Bottom Banner" />
     </main>
   );
 }

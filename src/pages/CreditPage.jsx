@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
 import ResultCard from "../components/calculator/ResultCard";
 import PaymentTable from "../components/calculator/PaymentTable";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import {
   calculateEqualPayment,
   calculateEqualPrincipal,
@@ -86,6 +87,9 @@ function CreditPage() {
         <h2>💳 신용대출 계산기</h2>
         <p>2026년 최신 정책 반영 - DSR 40%, 연소득 1배 한도</p>
       </div>
+
+      {/* 상단 광고: 페이지 진입 시 가장 먼저 노출 */}
+      <AdSense slot="4444444444" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 소득 및 부채 정보 */}
@@ -306,6 +310,29 @@ function CreditPage() {
           <div className="result-section">
             <h3>상환 시뮬레이션</h3>
 
+            {/* SEO 최적화 요약 리포트 (신규) */}
+            <div
+              className="seo-summary"
+              style={{
+                background: "#e3f2fd",
+                padding: "1rem",
+                borderRadius: "8px",
+                marginBottom: "1.5rem",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+            >
+              <p>
+                고객님이 신청하신 <strong>{formatCurrency(loanAmount)}</strong>{" "}
+                신용대출에 대해 <strong>{parseInt(loanPeriod) / 12}년</strong>{" "}
+                동안 금리 <strong>{interestRate}%</strong>로 상환할 경우, 총
+                납부해야 할 이자는{" "}
+                <strong>{formatCurrency(paymentResult.totalInterest)}</strong>
+                입니다. 이는 2026년 DSR 규제(40%)와 연소득 1배 한도를 고려하여
+                계산된 결과입니다.
+              </p>
+            </div>
+
             <div className="result-cards">
               {repaymentType === "equal" && (
                 <ResultCard
@@ -334,10 +361,16 @@ function CreditPage() {
               <ResultCard title="총 이자" value={paymentResult.totalInterest} />
             </div>
 
+            {/* 중간 광고: 결과 확인 후 표 보기 전 */}
+            <AdSense slot="5555555555" label="Middle Banner" />
+
             <PaymentTable schedule={paymentResult.schedule} />
           </div>
         )}
       </div>
+
+      {/* 하단 광고: 페이지 이탈 전 */}
+      <AdSense slot="6666666666" label="Bottom Banner" />
     </main>
   );
 }

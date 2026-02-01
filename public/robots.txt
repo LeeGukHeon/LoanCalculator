@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://loancalc2026.com/sitemap.xml

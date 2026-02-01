@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
 import ResultCard from "../components/calculator/ResultCard";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import { calculateEqualPayment } from "../utils/loanCalculations";
 import { formatCurrency } from "../utils/formatters";
 import "./PrepaymentPage.css";
@@ -168,6 +169,9 @@ function PrepaymentPage() {
         <h2>💰 중도상환 계산기</h2>
         <p>2026년 최신 수수료율 반영 - 이자 절감액 확인</p>
       </div>
+
+      {/* 상단 광고: 페이지 진입 시 가장 먼저 노출 */}
+      <AdSense slot="7777777777" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -349,6 +353,32 @@ function PrepaymentPage() {
           <div className="result-section">
             <h3>중도상환 계산 결과</h3>
 
+            {/* SEO 및 사용자 요약 (신규) */}
+            <div
+              className="seo-summary"
+              style={{
+                background: "#e3f2fd",
+                padding: "1rem",
+                borderRadius: "8px",
+                marginBottom: "1.5rem",
+                lineHeight: "1.6",
+                color: "#333",
+              }}
+            >
+              <p>
+                고객님이{" "}
+                <strong>{formatCurrency(results.prepaymentAmount)}</strong>을
+                중도상환 하실 경우, 수수료{" "}
+                {formatCurrency(results.prepaymentFee)}을 제외하고도 총{" "}
+                <strong>
+                  {formatCurrency(
+                    results.interestSaved - results.prepaymentFee,
+                  )}
+                </strong>
+                의 실질적인 이자 절감 효과를 보실 수 있습니다.
+              </p>
+            </div>
+
             <div className="result-cards">
               <ResultCard title="현재 잔액" value={results.remainingBalance} />
               <ResultCard
@@ -361,6 +391,9 @@ function PrepaymentPage() {
                 value={results.prepaymentAmount + results.prepaymentFee}
               />
             </div>
+
+            {/* 중간 광고: 수치 확인 후 상세 변화 보기 전 */}
+            <AdSense slot="8888888888" label="Middle Banner" />
 
             <div className="comparison-section">
               <h4>월 상환액 변화</h4>
@@ -414,6 +447,9 @@ function PrepaymentPage() {
           </div>
         )}
       </div>
+
+      {/* 하단 광고: 페이지 이탈 전 */}
+      <AdSense slot="9999999999" label="Bottom Banner" />
     </main>
   );
 }

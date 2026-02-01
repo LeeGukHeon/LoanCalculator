@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { guides } from "../data/guides";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import "./GuidesPage.css";
 
 function GuidesPage() {
@@ -12,6 +13,13 @@ function GuidesPage() {
         <h2>📚 대출 가이드</h2>
         <p>대출에 대한 모든 것을 알려드립니다</p>
       </div>
+
+      {/* 상단 광고: 목록 탐색 전 노출 */}
+      <AdSense
+        slot="5050505050"
+        label="Top Banner"
+        style={{ marginBottom: "3rem" }}
+      />
 
       <div className="guides-container">
         {categories.map((category) => (
@@ -34,6 +42,9 @@ function GuidesPage() {
           </div>
         ))}
       </div>
+
+      {/* 하단 광고: 페이지 끝 */}
+      <AdSense slot="6060606060" label="Bottom Banner" />
     </main>
   );
 }

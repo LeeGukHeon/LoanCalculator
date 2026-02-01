@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
 import "./RateComparePage.css";
 
 function RateComparePage() {
@@ -105,6 +106,9 @@ function RateComparePage() {
         <p>2026년 1월 기준 - 5대 시중은행 최신 금리</p>
       </div>
 
+      {/* 상단 광고: 사용자가 가장 먼저 보는 위치 (높은 단가) */}
+      <AdSense slot="1212121212" label="Top Banner" />
+
       <div className="rate-container">
         {/* 대출 유형 선택 */}
         <div className="input-section">
@@ -140,19 +144,30 @@ function RateComparePage() {
               실제 적용 금리는 개인의 신용도, 소득, 담보 등에 따라 크게 달라질
               수 있습니다
             </li>
-            <li>
-              은행명 및 금리 정보는 <strong>비교 참고 목적</strong>으로만
-              사용되며, 특정 금융상품을 추천하거나 권유하는 것이 아닙니다
-            </li>
-            <li>
-              정확한 대출 조건 및 금리는 반드시 해당 금융기관에 직접 문의하시기
-              바랍니다
-            </li>
-            <li>
-              본 사이트는 제공된 정보의 정확성에 대해 보증하지 않으며, 이를
-              기반으로 한 의사결정에 대한 책임을 지지 않습니다
-            </li>
           </ul>
+        </div>
+
+        {/* SEO 텍스트 추가 (체류 시간 증대) */}
+        <div
+          className="seo-summary"
+          style={{
+            background: "#f0f4ff",
+            padding: "1rem",
+            borderRadius: "8px",
+            marginBottom: "1.5rem",
+            fontSize: "0.95rem",
+            lineHeight: "1.6",
+            color: "#333",
+            borderLeft: "4px solid #0066ff",
+          }}
+        >
+          <p>
+            현재 <strong>{currentRates[0].bank}</strong>이(가) 최저 금리{" "}
+            <strong>{currentRates[0].minRate}%</strong>로 가장 유리한 조건을
+            제공하고 있습니다. 하지만 주거래 실적이나 우대 조건 달성 여부에 따라
+            순위가 달라질 수 있으므로, 아래 표에서 상세 조건을 반드시
+            확인해보세요.
+          </p>
         </div>
 
         {/* 안내 문구 */}
@@ -164,7 +179,6 @@ function RateComparePage() {
               개인 신용도, 소득, 우대조건에 따라 실제 금리는 달라질 수 있습니다
             </li>
             <li>우대금리 최대 적용 시 최저 금리까지 가능합니다</li>
-            <li>정확한 금리는 해당 은행에 문의하시기 바랍니다</li>
           </ul>
         </div>
 
@@ -212,6 +226,9 @@ function RateComparePage() {
             </tbody>
           </table>
         </div>
+
+        {/* 중간 광고: 금리 표 확인 후 팁을 보기 전 (주목도 최고) */}
+        <AdSense slot="3434343434" label="Middle Banner" />
 
         {/* 금리 인하 팁 */}
         <div className="tips-section">
@@ -288,6 +305,9 @@ function RateComparePage() {
             </div>
           </div>
         </div>
+
+        {/* 하단 광고: 페이지 이탈 전 마지막 노출 */}
+        <AdSense slot="5656565656" label="Bottom Banner" />
 
         {/* 업데이트 정보 */}
         <div className="update-info">
