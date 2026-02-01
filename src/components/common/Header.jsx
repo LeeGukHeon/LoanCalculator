@@ -38,6 +38,12 @@ function Header() {
           >
             중도상환
           </Link>
+          <Link
+            to="/rates"
+            className={location.pathname === "/rates" ? "active" : ""}
+          >
+            금리 비교
+          </Link>
         </nav>
       </div>
     </header>

@@ -1,0 +1,370 @@
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 20px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.rate-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-section {
+  margin-bottom: 2rem;
+}
+
+.loan-type-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.type-btn {
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.type-btn:hover {
+  border-color: #0066ff;
+  color: #0066ff;
+}
+
+.type-btn.active {
+  background: #0066ff;
+  border-color: #0066ff;
+  color: white;
+}
+
+.notice-box {
+  background: #fff8e1;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ffa726;
+  margin-bottom: 2rem;
+}
+
+.notice-box h4 {
+  margin-bottom: 1rem;
+  color: #e65100;
+}
+
+.notice-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notice-box li {
+  padding: 0.4rem 0;
+  padding-left: 1.5rem;
+  color: #424242;
+  position: relative;
+}
+
+.notice-box li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #ffa726;
+  font-weight: bold;
+}
+
+.rate-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 3rem;
+}
+
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  min-width: 800px;
+}
+
+.rate-table th,
+.rate-table td {
+  padding: 1rem;
+  text-align: left;
+  border: 1px solid #e0e0e0;
+}
+
+.rate-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.rate-table td {
+  vertical-align: middle;
+}
+
+.rate-table .rank {
+  text-align: center;
+  width: 80px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+}
+
+.badge.gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #333;
+}
+
+.badge.silver {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: #333;
+}
+
+.badge.bronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #d4a574 100%);
+  color: white;
+}
+
+.rank-number {
+  font-weight: 600;
+  color: #666;
+}
+
+.bank-name {
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.rate-range {
+  text-align: center;
+  color: #666;
+}
+
+.min-rate {
+  text-align: center;
+}
+
+.min-rate strong {
+  color: #0066ff;
+  font-size: 1.1rem;
+}
+
+.best-rate {
+  background: #e3f2fd;
+}
+
+.best-rate .bank-name {
+  color: #0066ff;
+}
+
+.benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefits li {
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.benefits li::before {
+  content: "✓ ";
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.tips-section {
+  margin-bottom: 3rem;
+}
+
+.tips-section h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.tip-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.tip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tip-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tip-card h4 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.tip-card p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.faq-section {
+  margin-bottom: 2rem;
+}
+
+.faq-section h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faq-item {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #0066ff;
+}
+
+.faq-item h4 {
+  margin-bottom: 0.75rem;
+  color: #0066ff;
+  font-size: 1.05rem;
+}
+
+.faq-item p {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.update-info {
+  text-align: center;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.update-info p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .rate-container {
+    padding: 1.5rem;
+  }
+
+  .loan-type-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .rate-table th,
+  .rate-table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .tips-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tip-icon {
+    font-size: 2rem;
+  }
+}
+
+.disclaimer-box {
+  background: #ffebee;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #f44336;
+  margin-bottom: 2rem;
+}
+
+.disclaimer-box h4 {
+  margin-bottom: 1rem;
+  color: #d32f2f;
+  font-size: 1.1rem;
+}
+
+.disclaimer-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.disclaimer-box li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  color: #424242;
+  position: relative;
+  line-height: 1.6;
+}
+
+.disclaimer-box li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #f44336;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.disclaimer-box strong {
+  color: #d32f2f;
+  font-weight: 600;
+}

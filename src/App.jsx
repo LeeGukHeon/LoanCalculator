@@ -6,6 +6,7 @@ import MortgagePage from "./pages/MortgagePage";
 import CreditPage from "./pages/CreditPage";
 import ComparePage from "./pages/ComparePage";
 import PrepaymentPage from "./pages/PrepaymentPage";
+import RateComparePage from "./pages/RateComparePage";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/credit" element={<CreditPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/prepayment" element={<PrepaymentPage />} />
+          <Route path="/rates" element={<RateComparePage />} />
         </Routes>
         <Footer />
       </div>

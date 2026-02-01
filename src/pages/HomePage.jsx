@@ -41,6 +41,14 @@ function HomePage() {
             계산하기
           </Link>
         </div>
+
+        <div className="card">
+          <h3>🏦 금리 비교</h3>
+          <p>5대 은행의 최신 금리를 비교합니다</p>
+          <Link to="/rates" className="btn">
+            비교하기
+          </Link>
+        </div>
       </section>
     </main>
   );
