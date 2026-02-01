@@ -97,3 +97,28 @@ export const DSR_REGULATION = {
   threshold: 100000000, // 1억 초과 시 적용
   maxRatio: 40, // 40%
 };
+
+// 신용대출
+export const CREDIT_LOAN = {
+  name: "신용대출",
+  maxRatio: 1.0, // 연소득의 1배 이내 (2026년 기준)
+  baseRate: {
+    min: 6.8,
+    max: 16.3,
+  },
+  dsr: 40,
+};
+
+// 신용등급별 금리 (예시)
+export const CREDIT_RATING_RATES = {
+  grade1: { min: 6.8, max: 8.5, name: "1등급 (900점 이상)" },
+  grade2: { min: 7.5, max: 9.5, name: "2등급 (870-899점)" },
+  grade3: { min: 8.5, max: 10.5, name: "3등급 (840-869점)" },
+  grade4: { min: 9.5, max: 11.5, name: "4등급 (805-839점)" },
+  grade5: { min: 10.5, max: 12.5, name: "5등급 (750-804점)" },
+  grade6: { min: 11.5, max: 13.5, name: "6등급 (665-749점)" },
+  grade7: { min: 12.5, max: 14.5, name: "7등급 (600-664점)" },
+  grade8: { min: 13.5, max: 15.3, name: "8등급 (515-599점)" },
+  grade9: { min: 14.5, max: 16.3, name: "9등급 (445-514점)" },
+  grade10: { min: 15.3, max: 16.3, name: "10등급 (445점 미만)" },
+};

@@ -311,3 +311,71 @@ export function calculateMaxLoanAmount(params) {
     },
   };
 }
+
+// 신용대출 최대 한도 계산
+export function calculateCreditLoanLimit(
+  annualIncome,
+  existingLoanMonthly,
+  loanMonths,
+  interestRate,
+) {
+  // 1. 연소득 기준 한도 (연소득의 1배)
+  const incomeLimit = annualIncome * 1.0;
+
+  // 2. DSR 기준 한도 (40%)
+  const monthlyIncome = annualIncome / 12;
+  const dsrRatio = DSR_REGULATION.maxRatio; // 40%
+
+  // 스트레스 금리 적용 (신용대출은 +3.0%p)
+  const stressRate = interestRate + 3.0;
+  const monthlyRate = stressRate / 12 / 100;
+
+  // 가능한 총 월 상환액
+  const maxTotalMonthlyPayment = monthlyIncome * (dsrRatio / 100);
+
+  // 신규 대출에 사용 가능한 월 상환액
+  const availableMonthlyPayment = maxTotalMonthlyPayment - existingLoanMonthly;
+
+  if (availableMonthlyPayment <= 0) {
+    return {
+      maxAmount: 0,
+      limitingFactor: "DSR",
+      errors: ["기존 대출로 인해 추가 대출이 불가능합니다"],
+      details: {
+        incomeLimit,
+        dsrLimit: 0,
+      },
+    };
+  }
+
+  if (monthlyRate === 0) {
+    return {
+      maxAmount: Math.min(incomeLimit, availableMonthlyPayment * loanMonths),
+      limitingFactor:
+        incomeLimit < availableMonthlyPayment * loanMonths ? "소득" : "DSR",
+      errors: [],
+      details: {
+        incomeLimit,
+        dsrLimit: availableMonthlyPayment * loanMonths,
+      },
+    };
+  }
+
+  // 역산: 월 상환액으로부터 대출 원금 계산
+  const dsrLimit =
+    (availableMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
+    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths));
+
+  const maxAmount = Math.min(incomeLimit, dsrLimit);
+  const limitingFactor = maxAmount === incomeLimit ? "소득" : "DSR";
+
+  return {
+    maxAmount,
+    limitingFactor,
+    errors: [],
+    details: {
+      incomeLimit,
+      dsrLimit,
+    },
+  };
+}
