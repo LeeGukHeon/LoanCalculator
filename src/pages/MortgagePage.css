@@ -45,27 +45,44 @@
   font-size: 1.3rem;
 }
 
-/* 대출 유형 버튼 - 3개 한 줄에 */
-.calculator-container .loan-type-buttons {
+/* 🟢 수정됨: 버튼 컨테이너 공통 스타일 (대출 유형 & 상환 방식) */
+.calculator-container .loan-type-buttons,
+.calculator-container .repayment-type-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr); /* PC에서 한 줄에 3개씩 */
   gap: 1rem;
   margin-top: 1rem;
   width: 100%;
 }
 
-.calculator-container .loan-type-buttons .type-btn {
+/* 🟢 수정됨: 버튼 공통 스타일 (type-btn) */
+/* .loan-type-buttons .type-btn, .repayment-type-buttons .type-btn 모두 적용 */
+.type-btn {
   width: 100%;
   padding: 1rem;
   border: 2px solid #d0d0d0;
-  background: #f8f9fa;
+  background: #f8f9fa; /* 기본 배경색 (회색빛) */
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.3s;
   box-sizing: border-box;
+  color: #333; /* 기본 글자색 */
+}
+
+/* 호버 효과 */
+.type-btn:hover {
+  border-color: #0066ff;
+  background: #f0f7ff;
   color: #333;
+}
+
+/* 활성화(클릭됨) 효과 */
+.type-btn.active {
+  border-color: #0066ff;
+  background: #0066ff; /* 파란색 배경 */
+  color: white; /* 흰색 글자 */
 }
 
 .loan-select {
@@ -80,44 +97,6 @@
 .loan-select:focus {
   outline: none;
   border-color: #0066ff;
-}
-
-/* 상환 방식 버튼 - 4개 한 줄에 */
-.calculator-container .repayment-type-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  width: 100%;
-}
-
-.calculator-container .repayment-type-buttons .type-btn {
-  width: 100%;
-  padding: 1rem;
-}
-
-.type-btn {
-  padding: 1rem;
-  border: 2px solid #d0d0d0;
-  background: #f8f9fa;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.3s;
-  color: #333;
-}
-
-.type-btn:hover {
-  border-color: #0066ff;
-  background: #f0f7ff;
-  color: #333;
-}
-
-.type-btn.active {
-  border-color: #0066ff;
-  background: #0066ff;
-  color: white;
 }
 
 .checkbox-group {
@@ -286,10 +265,13 @@
     padding: 1.5rem;
   }
 
+  /* 🟢 수정됨: 모바일에서는 한 줄에 1개씩 (세로 배치) 또는 2개씩 */
+  /* 대출 유형 버튼은 1줄에 1개씩 */
   .calculator-container .loan-type-buttons {
     grid-template-columns: 1fr;
   }
 
+  /* 상환 방식 버튼은 2줄로 (2개씩) */
   .calculator-container .repayment-type-buttons {
     grid-template-columns: repeat(2, 1fr);
   }
