@@ -1,0 +1,27 @@
+.result-card {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.result-card.highlight {
+  background: #e3f2fd;
+  border: 2px solid #0066ff;
+}
+
+.result-card-title {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.result-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.result-card.highlight .result-card-value {
+  color: #0066ff;
+}

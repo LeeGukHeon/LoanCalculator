@@ -1,0 +1,35 @@
+.loan-input {
+  margin-bottom: 1.5rem;
+}
+
+.loan-input-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.loan-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.loan-input-field {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.loan-input-field:focus {
+  outline: none;
+  border-color: #0066ff;
+}
+
+.loan-input-unit {
+  color: #666;
+  font-weight: 500;
+}
