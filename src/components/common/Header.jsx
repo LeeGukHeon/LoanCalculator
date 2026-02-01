@@ -1,48 +1,31 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Header.css";
 
 function Header() {
-  const location = useLocation();
-
   return (
     <header className="header">
       <div className="header-container">
         <Link to="/" className="logo">
-          <h1>💰 대출 이자 계산기</h1>
+          🏠 대출계산기
         </Link>
         <nav className="nav">
-          <Link to="/" className={location.pathname === "/" ? "active" : ""}>
-            홈
-          </Link>
-          <Link
-            to="/mortgage"
-            className={location.pathname === "/mortgage" ? "active" : ""}
-          >
+          <Link to="/mortgage" className="nav-link">
             주택담보대출
           </Link>
-          <Link
-            to="/credit"
-            className={location.pathname === "/credit" ? "active" : ""}
-          >
+          <Link to="/credit" className="nav-link">
             신용대출
           </Link>
-          <Link
-            to="/compare"
-            className={location.pathname === "/compare" ? "active" : ""}
-          >
+          <Link to="/compare" className="nav-link">
             상환방식 비교
           </Link>
-          <Link
-            to="/prepayment"
-            className={location.pathname === "/prepayment" ? "active" : ""}
-          >
+          <Link to="/prepayment" className="nav-link">
             중도상환
           </Link>
-          <Link
-            to="/rates"
-            className={location.pathname === "/rates" ? "active" : ""}
-          >
-            금리 비교
+          <Link to="/rates" className="nav-link">
+            금리비교
+          </Link>
+          <Link to="/guides" className="nav-link">
+            가이드
           </Link>
         </nav>
       </div>

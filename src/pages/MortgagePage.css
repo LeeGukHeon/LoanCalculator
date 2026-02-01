@@ -45,10 +45,27 @@
   font-size: 1.3rem;
 }
 
-.loan-type-buttons {
-  display: flex;
+/* 대출 유형 버튼 - 3개 한 줄에 */
+.calculator-container .loan-type-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
-  flex-wrap: wrap;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.calculator-container .loan-type-buttons .type-btn {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #d0d0d0;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  color: #333;
 }
 
 .loan-select {
@@ -65,31 +82,41 @@
   border-color: #0066ff;
 }
 
-.repayment-type-buttons {
+/* 상환 방식 버튼 - 4개 한 줄에 */
+.calculator-container .repayment-type-buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.calculator-container .repayment-type-buttons .type-btn {
+  width: 100%;
+  padding: 1rem;
 }
 
 .type-btn {
-  padding: 0.75rem 1rem;
-  background: white;
-  border: 2px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: 1rem;
+  border: 2px solid #d0d0d0;
+  background: #f8f9fa;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
   transition: all 0.3s;
+  color: #333;
 }
 
 .type-btn:hover {
   border-color: #0066ff;
-  color: #0066ff;
+  background: #f0f7ff;
+  color: #333;
 }
 
 .type-btn.active {
-  background: #0066ff;
   border-color: #0066ff;
+  background: #0066ff;
   color: white;
 }
 
@@ -243,21 +270,28 @@
   margin-bottom: 2rem;
 }
 
+.info-text {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: #fff8e1;
+  border-left: 3px solid #ffa726;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #e65100;
+}
+
+/* 모바일 반응형 */
 @media (max-width: 768px) {
   .calculator-container {
     padding: 1.5rem;
   }
 
-  .loan-type-buttons {
-    flex-direction: column;
-  }
-
-  .type-btn {
-    width: 100%;
-  }
-
-  .repayment-type-buttons {
+  .calculator-container .loan-type-buttons {
     grid-template-columns: 1fr;
+  }
+
+  .calculator-container .repayment-type-buttons {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .result-cards {
@@ -271,14 +305,4 @@
   .page-header h2 {
     font-size: 1.6rem;
   }
-}
-
-.info-text {
-  margin-top: 0.5rem;
-  padding: 0.75rem;
-  background: #fff8e1;
-  border-left: 3px solid #ffa726;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  color: #e65100;
 }

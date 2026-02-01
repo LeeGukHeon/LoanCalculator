@@ -49,6 +49,14 @@ function HomePage() {
             비교하기
           </Link>
         </div>
+
+        <div className="card">
+          <h3>📚 대출 가이드</h3>
+          <p>대출에 대한 모든 것을 알려드립니다</p>
+          <Link to="/guides" className="btn">
+            가이드 보기
+          </Link>
+        </div>
       </section>
     </main>
   );

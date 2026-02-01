@@ -1,0 +1,211 @@
+.main {
+  flex: 1;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 20px;
+}
+
+.guide-detail-container {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.guide-header {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.back-link {
+  display: inline-block;
+  color: #0066ff;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #0052cc;
+  text-decoration: underline;
+}
+
+.guide-category-badge {
+  display: inline-block;
+  background: #0066ff;
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.guide-header h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.guide-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.guide-content {
+  line-height: 1.8;
+  color: #333;
+}
+
+.guide-content h1 {
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.guide-content h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+  border-left: 4px solid #0066ff;
+  padding-left: 1rem;
+}
+
+.guide-content h3 {
+  font-size: 1.3rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.guide-content p {
+  margin-bottom: 1rem;
+}
+
+.guide-content ul,
+.guide-content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.guide-content li {
+  margin-bottom: 0.5rem;
+}
+
+.guide-content strong {
+  color: #0066ff;
+  font-weight: 600;
+}
+
+.guide-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.guide-content table th,
+.guide-content table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.guide-content table th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.guide-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: #0066ff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #0052cc;
+}
+
+.related-calculators {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.related-calculators h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.calculator-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.calc-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 2px solid #0066ff;
+  color: #0066ff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.calc-link:hover {
+  background: #0066ff;
+  color: white;
+}
+
+.not-found {
+  text-align: center;
+  padding: 3rem;
+}
+
+.not-found h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .guide-detail-container {
+    padding: 1.5rem;
+  }
+
+  .guide-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .guide-content h1 {
+    font-size: 1.4rem;
+  }
+
+  .guide-content h2 {
+    font-size: 1.2rem;
+  }
+}
