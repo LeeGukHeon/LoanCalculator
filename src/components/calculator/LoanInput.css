@@ -9,6 +9,14 @@
   color: #333;
 }
 
+.help-text {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
 .loan-input-wrapper {
   display: flex;
   align-items: center;
@@ -32,4 +40,6 @@
 .loan-input-unit {
   color: #666;
   font-weight: 500;
+  min-width: 60px;
+  text-align: left;
 }

@@ -9,10 +9,14 @@ function LoanInput({
   min,
   max,
   step,
+  helpText,
 }) {
   return (
     <div className="loan-input">
-      <label className="loan-input-label">{label}</label>
+      <label className="loan-input-label">
+        {label}
+        {helpText && <span className="help-text">{helpText}</span>}
+      </label>
       <div className="loan-input-wrapper">
         <input
           type={type}
