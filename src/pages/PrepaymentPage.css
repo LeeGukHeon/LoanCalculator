@@ -1,0 +1,317 @@
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 20px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-header h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.calculator-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.input-section:last-of-type {
+  border-bottom: none;
+}
+
+.input-section h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.loan-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.type-btn {
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.type-btn:hover {
+  border-color: #0066ff;
+  color: #0066ff;
+}
+
+.type-btn.active {
+  background: #0066ff;
+  border-color: #0066ff;
+  color: white;
+}
+
+.rate-type-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.loan-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.loan-select:focus {
+  outline: none;
+  border-color: #0066ff;
+}
+
+.success-box {
+  background: #e8f5e9;
+  border: 2px solid #4caf50;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-box {
+  background: #fff5f5;
+  border: 2px solid #ff4444;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.error-box h4 {
+  color: #d32f2f;
+  margin-bottom: 0.5rem;
+}
+
+.error-box p {
+  color: #d32f2f;
+  margin: 0;
+}
+
+.result-section {
+  margin-top: 2rem;
+}
+
+.result-section h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.result-section h4 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.result-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.comparison-section {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.comparison-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.comparison-item {
+  flex: 1;
+  min-width: 150px;
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.comparison-item.highlight {
+  border-color: #0066ff;
+  background: #e3f2fd;
+}
+
+.comparison-item .label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.comparison-item .value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.comparison-item.highlight .value {
+  color: #0066ff;
+}
+
+.arrow {
+  font-size: 2rem;
+  color: #0066ff;
+  font-weight: bold;
+}
+
+.diff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #e8f5e9;
+  border-radius: 8px;
+  min-width: 120px;
+}
+
+.diff strong {
+  font-size: 1.2rem;
+  color: #4caf50;
+  margin-bottom: 0.25rem;
+}
+
+.diff span {
+  font-size: 0.9rem;
+  color: #2e7d32;
+}
+
+.savings-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.savings-box h4 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.savings-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.savings-detail {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.info-text {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: #fff8e1;
+  border-left: 3px solid #ffa726;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #e65100;
+}
+
+@media (max-width: 768px) {
+  .calculator-container {
+    padding: 1.5rem;
+  }
+
+  .loan-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-row {
+    flex-direction: column;
+  }
+
+  .arrow {
+    transform: rotate(90deg);
+  }
+
+  .result-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .savings-amount {
+    font-size: 2rem;
+  }
+}
+
+.info-box {
+  background: #e3f2fd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  margin-top: 1rem;
+}
+
+.info-box strong {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: #1976d2;
+  font-size: 1.05rem;
+}
+
+.info-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-box li {
+  padding: 0.4rem 0;
+  padding-left: 1.5rem;
+  color: #424242;
+  position: relative;
+}
+
+.info-box li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #2196f3;
+  font-weight: bold;
+}

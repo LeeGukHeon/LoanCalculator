@@ -33,6 +33,14 @@ function HomePage() {
             비교하기
           </Link>
         </div>
+
+        <div className="card">
+          <h3>💰 중도상환</h3>
+          <p>중도상환 수수료와 이자 절감액을 계산합니다</p>
+          <Link to="/prepayment" className="btn">
+            계산하기
+          </Link>
+        </div>
       </section>
     </main>
   );

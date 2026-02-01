@@ -32,6 +32,12 @@ function Header() {
           >
             상환방식 비교
           </Link>
+          <Link
+            to="/prepayment"
+            className={location.pathname === "/prepayment" ? "active" : ""}
+          >
+            중도상환
+          </Link>
         </nav>
       </div>
     </header>
