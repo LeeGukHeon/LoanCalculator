@@ -16,7 +16,7 @@ function HomePage() {
 
       {/* 상단 광고: Hero 섹션과 카드 메뉴 사이 (주목도 높음) */}
       <AdSense
-        slot="9090909090"
+        slot="3924893287"
         label="Main Top Banner"
         style={{ marginBottom: "3rem" }}
       />
@@ -96,7 +96,7 @@ function HomePage() {
       </section>
 
       {/* 하단 광고: 페이지 끝 */}
-      <AdSense slot="8080808080" label="Main Bottom Banner" />
+      <AdSense slot="2611811617" label="Main Bottom Banner" />
     </main>
   );
 }

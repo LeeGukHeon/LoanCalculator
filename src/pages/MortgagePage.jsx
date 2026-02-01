@@ -165,7 +165,7 @@ function MortgagePage() {
       </div>
 
       {/* 상단 광고: 페이지 제목 아래 높은 주목도 */}
-      <AdSense slot="1234567890" label="Top Banner" />
+      <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -607,7 +607,7 @@ function MortgagePage() {
             </div>
 
             {/* 중간 광고: 결과 카드 확인 후 상세 내역 보기 전 클릭률 높은 위치 */}
-            <AdSense slot="0987654321" label="Middle Banner" />
+            <AdSense slot="1616685917" label="Middle Banner" />
 
             <PaymentTable schedule={paymentResult.schedule} />
           </div>
@@ -615,7 +615,7 @@ function MortgagePage() {
       </div>
 
       {/* 하단 광고 */}
-      <AdSense slot="1122334455" label="Bottom Banner" />
+      <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );
 }

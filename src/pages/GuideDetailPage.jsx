@@ -58,7 +58,7 @@ function GuideDetailPage() {
 
           {/* 🔥 본문 중간 광고 (In-Article Ad) */}
           <AdSense
-            slot="4646464646"
+            slot="7157221978"
             label="In-Article Banner"
             format="fluid" // 본문 흐름에 맞게 자연스럽게 조절
             style={{ margin: "3rem 0" }}
@@ -88,7 +88,7 @@ function GuideDetailPage() {
 
         {/* 상단 광고: 제목 직후 높은 주목도 */}
         <AdSense
-          slot="1313131313"
+          slot="3924893287"
           label="Top Banner"
           style={{ marginBottom: "2rem" }}
         />
@@ -98,7 +98,7 @@ function GuideDetailPage() {
         </div>
 
         {/* 하단 광고: 본문 독파 후 */}
-        <AdSense slot="7979797979" label="Bottom Banner" />
+        <AdSense slot="2611811617" label="Bottom Banner" />
 
         <div className="guide-footer">
           <Link to="/guides" className="btn">

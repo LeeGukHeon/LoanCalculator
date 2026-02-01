@@ -81,7 +81,7 @@ function ComparePage() {
       </div>
 
       {/* 상단 광고: 높은 주목도 */}
-      <AdSense slot="1010101010" label="Top Banner" />
+      <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -280,7 +280,7 @@ function ComparePage() {
             </div>
 
             {/* 중간 광고: 표 확인 후 상세 설명 보기 전 (클릭률 높음) */}
-            <AdSense slot="2020202020" label="Middle Banner" />
+            <AdSense slot="1616685917" label="Middle Banner" />
 
             {/* 각 방식 특징 */}
             <div className="comparison-cards">
@@ -358,7 +358,7 @@ function ComparePage() {
       </div>
 
       {/* 하단 광고 */}
-      <AdSense slot="3030303030" label="Bottom Banner" />
+      <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );
 }

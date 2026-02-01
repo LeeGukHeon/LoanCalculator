@@ -107,7 +107,7 @@ function RateComparePage() {
       </div>
 
       {/* 상단 광고: 사용자가 가장 먼저 보는 위치 (높은 단가) */}
-      <AdSense slot="1212121212" label="Top Banner" />
+      <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="rate-container">
         {/* 대출 유형 선택 */}
@@ -228,7 +228,7 @@ function RateComparePage() {
         </div>
 
         {/* 중간 광고: 금리 표 확인 후 팁을 보기 전 (주목도 최고) */}
-        <AdSense slot="3434343434" label="Middle Banner" />
+        <AdSense slot="1616685917" label="Middle Banner" />
 
         {/* 금리 인하 팁 */}
         <div className="tips-section">
@@ -307,7 +307,7 @@ function RateComparePage() {
         </div>
 
         {/* 하단 광고: 페이지 이탈 전 마지막 노출 */}
-        <AdSense slot="5656565656" label="Bottom Banner" />
+        <AdSense slot="2611811617" label="Bottom Banner" />
 
         {/* 업데이트 정보 */}
         <div className="update-info">

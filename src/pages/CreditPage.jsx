@@ -89,7 +89,7 @@ function CreditPage() {
       </div>
 
       {/* 상단 광고: 페이지 진입 시 가장 먼저 노출 */}
-      <AdSense slot="4444444444" label="Top Banner" />
+      <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 소득 및 부채 정보 */}
@@ -362,7 +362,7 @@ function CreditPage() {
             </div>
 
             {/* 중간 광고: 결과 확인 후 표 보기 전 */}
-            <AdSense slot="5555555555" label="Middle Banner" />
+            <AdSense slot="1616685917" label="Middle Banner" />
 
             <PaymentTable schedule={paymentResult.schedule} />
           </div>
@@ -370,7 +370,7 @@ function CreditPage() {
       </div>
 
       {/* 하단 광고: 페이지 이탈 전 */}
-      <AdSense slot="6666666666" label="Bottom Banner" />
+      <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );
 }

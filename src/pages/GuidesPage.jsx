@@ -16,7 +16,7 @@ function GuidesPage() {
 
       {/* 상단 광고: 목록 탐색 전 노출 */}
       <AdSense
-        slot="5050505050"
+        slot="3924893287"
         label="Top Banner"
         style={{ marginBottom: "3rem" }}
       />
@@ -44,7 +44,7 @@ function GuidesPage() {
       </div>
 
       {/* 하단 광고: 페이지 끝 */}
-      <AdSense slot="6060606060" label="Bottom Banner" />
+      <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );
 }

@@ -171,7 +171,7 @@ function PrepaymentPage() {
       </div>
 
       {/* 상단 광고: 페이지 진입 시 가장 먼저 노출 */}
-      <AdSense slot="7777777777" label="Top Banner" />
+      <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="calculator-container">
         {/* 대출 유형 선택 */}
@@ -393,7 +393,7 @@ function PrepaymentPage() {
             </div>
 
             {/* 중간 광고: 수치 확인 후 상세 변화 보기 전 */}
-            <AdSense slot="8888888888" label="Middle Banner" />
+            <AdSense slot="1616685917" label="Middle Banner" />
 
             <div className="comparison-section">
               <h4>월 상환액 변화</h4>
@@ -449,7 +449,7 @@ function PrepaymentPage() {
       </div>
 
       {/* 하단 광고: 페이지 이탈 전 */}
-      <AdSense slot="9999999999" label="Bottom Banner" />
+      <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );
 }
