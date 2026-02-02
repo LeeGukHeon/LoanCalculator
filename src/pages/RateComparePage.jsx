@@ -5,8 +5,28 @@ import "./RateComparePage.css";
 function RateComparePage() {
   const [loanType, setLoanType] = useState("mortgage"); // mortgage, credit
 
-  // 2026년 1월 기준 주택담보대출 금리
+  // [1] 2026년 1월 기준 주택담보대출 금리 (정책모기지 + 시중은행)
   const mortgageRates = [
+    {
+      id: "didimdol",
+      bank: "내집마련 디딤돌",
+      minRate: 2.65,
+      maxRate: 3.95,
+      type: "정책모기지",
+      benefits: ["DSR 미적용", "LTV 최대 80%(비수도권)", "금리우대 최대 0.7%p"],
+      link: "https://nhuf.molit.go.kr",
+      isPolicy: true, // 정책 상품 강조용
+    },
+    {
+      id: "bogeumjari",
+      bank: "특례 보금자리론",
+      minRate: 3.9,
+      maxRate: 4.5,
+      type: "정책모기지",
+      benefits: ["고정금리", "체증식 상환 가능", "중도상환수수료 면제(일부)"],
+      link: "https://hf.go.kr",
+      isPolicy: true,
+    },
     {
       bank: "NH농협은행",
       minRate: 3.91,
@@ -14,6 +34,7 @@ function RateComparePage() {
       type: "혼합형",
       benefits: ["급여이체 -0.3%p", "자동이체 -0.2%p", "조합원 우대"],
       link: "https://banking.nonghyup.com",
+      isPolicy: false,
     },
     {
       bank: "신한은행",
@@ -26,6 +47,7 @@ function RateComparePage() {
         "신한플러스 -0.1%p",
       ],
       link: "https://www.shinhan.com",
+      isPolicy: false,
     },
     {
       bank: "우리은행",
@@ -34,6 +56,7 @@ function RateComparePage() {
       type: "고정·혼합",
       benefits: ["급여이체 -0.4%p", "WON통장 -0.2%p", "우리카드 실적"],
       link: "https://www.wooribank.com",
+      isPolicy: false,
     },
     {
       bank: "KB국민은행",
@@ -42,6 +65,7 @@ function RateComparePage() {
       type: "혼합·고정",
       benefits: ["급여이체 -0.5%p", "KB카드 실적 -0.3%p", "KB스타클럽"],
       link: "https://www.kbstar.com",
+      isPolicy: false,
     },
     {
       bank: "하나은행",
@@ -50,10 +74,11 @@ function RateComparePage() {
       type: "혼합형",
       benefits: ["급여이체 -0.4%p", "하나카드 실적 -0.2%p", "하나원큐 -0.1%p"],
       link: "https://www.kebhana.com",
+      isPolicy: false,
     },
   ];
 
-  // 2026년 1월 기준 신용대출 금리 (직장인)
+  // [2] 2026년 1월 기준 신용대출 금리 (직장인)
   const creditRates = [
     {
       bank: "NH농협은행",
@@ -102,8 +127,8 @@ function RateComparePage() {
   return (
     <main className="main">
       <div className="page-header">
-        <h2>🏦 은행별 금리 비교</h2>
-        <p>2026년 1월 기준 - 5대 시중은행 최신 금리</p>
+        <h2>🏦 대출 금리 비교</h2>
+        <p>2026년 1월 기준 - 정책모기지 및 5대 시중은행 최신 금리</p>
       </div>
 
       {/* 상단 광고: 사용자가 가장 먼저 보는 위치 (높은 단가) */}
@@ -161,13 +186,23 @@ function RateComparePage() {
             borderLeft: "4px solid #0066ff",
           }}
         >
-          <p>
-            현재 <strong>{currentRates[0].bank}</strong>이(가) 최저 금리{" "}
-            <strong>{currentRates[0].minRate}%</strong>로 가장 유리한 조건을
-            제공하고 있습니다. 하지만 주거래 실적이나 우대 조건 달성 여부에 따라
-            순위가 달라질 수 있으므로, 아래 표에서 상세 조건을 반드시
-            확인해보세요.
-          </p>
+          {loanType === "mortgage" ? (
+            <p>
+              현재 <strong>디딤돌대출</strong>이 최저 금리 <strong>2%대</strong>
+              로 가장 유리하며, 시중은행 중에서는 <strong>NH농협은행</strong>이
+              최저 금리 <strong>3.91%</strong> 수준을 보이고 있습니다. 단,
+              2026년 규제(스트레스 DSR 3단계)로 인해 수도권 대출 한도가 축소될
+              수 있으니
+              <strong>정책 모기지(디딤돌/보금자리)</strong>를 우선 확인해보세요.
+            </p>
+          ) : (
+            <p>
+              현재 <strong>NH농협은행</strong>이 최저 금리 <strong>5.0%</strong>
+              로 가장 유리한 조건을 제공하고 있습니다. 신용대출은 연소득 범위
+              내(100%) 한도 제한이 적용되므로, 주거래 은행의 우대 금리 조건을
+              꼼꼼히 비교해보는 것이 좋습니다.
+            </p>
+          )}
         </div>
 
         {/* 안내 문구 */}
@@ -187,8 +222,8 @@ function RateComparePage() {
           <table className="rate-table">
             <thead>
               <tr>
-                <th>순위</th>
-                <th>은행</th>
+                <th>구분</th>
+                <th>은행/상품명</th>
                 <th>금리 범위</th>
                 <th>최저 금리</th>
                 <th>유형</th>
@@ -197,16 +232,51 @@ function RateComparePage() {
             </thead>
             <tbody>
               {currentRates.map((rate, index) => (
-                <tr key={rate.bank} className={index === 0 ? "best-rate" : ""}>
+                <tr
+                  key={rate.bank}
+                  className={
+                    rate.isPolicy
+                      ? "policy-rate"
+                      : index === 0 && !rate.isPolicy
+                        ? "best-rate"
+                        : ""
+                  }
+                >
                   <td className="rank">
-                    {index === 0 && <span className="badge gold">1위</span>}
-                    {index === 1 && <span className="badge silver">2위</span>}
-                    {index === 2 && <span className="badge bronze">3위</span>}
-                    {index > 2 && (
-                      <span className="rank-number">{index + 1}</span>
+                    {rate.isPolicy ? (
+                      <span
+                        className="badge policy"
+                        style={{ background: "#6c5ce7", color: "white" }}
+                      >
+                        정책
+                      </span>
+                    ) : (
+                      <>
+                        {/* 정책 상품 제외한 순위 계산 로직이 복잡하므로 단순 인덱스 처리하거나 은행 배지 표시 */}
+                        <span
+                          className="badge bank"
+                          style={{ background: "#f1f2f6", color: "#333" }}
+                        >
+                          은행
+                        </span>
+                      </>
                     )}
                   </td>
-                  <td className="bank-name">{rate.bank}</td>
+                  <td className="bank-name">
+                    {rate.bank}
+                    {rate.isPolicy && (
+                      <span
+                        className="hot-tag"
+                        style={{
+                          fontSize: "0.7rem",
+                          color: "#ff3b30",
+                          marginLeft: "4px",
+                        }}
+                      >
+                        ★
+                      </span>
+                    )}
+                  </td>
                   <td className="rate-range">
                     {rate.minRate.toFixed(2)}% ~ {rate.maxRate.toFixed(2)}%
                   </td>
@@ -241,8 +311,8 @@ function RateComparePage() {
             </div>
             <div className="tip-card">
               <div className="tip-icon">📱</div>
-              <h4>모바일 뱅킹</h4>
-              <p>인터넷/모바일 뱅킹 가입 시 0.1~0.2%p 추가 우대</p>
+              <h4>비대면 신청</h4>
+              <p>영업점 방문 대신 모바일 앱 신청 시 0.1~0.2%p 추가 우대</p>
             </div>
             <div className="tip-card">
               <div className="tip-icon">💰</div>
@@ -256,13 +326,13 @@ function RateComparePage() {
             </div>
             <div className="tip-card">
               <div className="tip-icon">📊</div>
-              <h4>신용등급 관리</h4>
-              <p>신용등급 1~2등급 유지로 최저 금리 적용 가능</p>
+              <h4>금리인하요구권</h4>
+              <p>승진, 연봉 인상 등 신용 상태 개선 시 금리 인하 요구 가능</p>
             </div>
             <div className="tip-card">
               <div className="tip-icon">🏅</div>
-              <h4>우대 고객</h4>
-              <p>은행별 VIP/우수고객 등급으로 추가 우대 금리</p>
+              <h4>주거래 우대</h4>
+              <p>은행별 VIP/우수고객 등급 달성 시 추가 우대 혜택</p>
             </div>
           </div>
         </div>
@@ -274,33 +344,33 @@ function RateComparePage() {
             <div className="faq-item">
               <h4>Q. 최저 금리를 받으려면?</h4>
               <p>
-                A. 신용등급 1~2등급, 급여이체, 카드 실적, 자동이체 등 모든
-                우대조건을 충족해야 최저 금리 적용이 가능합니다. 일반적으로
-                3~4등급은 중간 금리대가 적용됩니다.
+                A. 신용등급 1~2등급(KCB 900점대), 급여이체, 카드 실적, 자동이체
+                등 모든 우대조건을 충족해야 최저 금리 적용이 가능합니다.
+                일반적으로 3~4등급은 중간 금리대가 적용됩니다.
               </p>
             </div>
             <div className="faq-item">
               <h4>Q. 변동금리 vs 고정금리?</h4>
               <p>
-                A. 변동금리는 시장 금리에 따라 변동되며 초기 금리가 낮습니다.
-                고정금리는 전 기간 동일한 금리가 적용되어 안정적이지만 초기
-                금리가 높습니다. 금리 상승 예상 시 고정금리가 유리합니다.
+                A. 2026년 금리 인하 기조에서는 변동금리가 유리할 수 있으나, 장기
+                대출인 주담대는 리스크 관리를 위해 혼합형(5년 고정)이나 주기형을
+                추천합니다.
               </p>
             </div>
             <div className="faq-item">
-              <h4>Q. 은행별 금리 차이가 크지 않은데 어디가 좋을까요?</h4>
+              <h4>Q. 디딤돌 대출과 은행 대출 중 무엇이 유리한가요?</h4>
               <p>
-                A. 금리뿐 아니라 중도상환 수수료, 대출 한도, 심사 기준,
-                우대조건의 달성 난이도 등을 종합적으로 고려해야 합니다. 주거래
-                은행이 있다면 우대 혜택을 받기 쉽습니다.
+                A. 자격(소득, 주택가격)이 된다면 <strong>디딤돌 대출</strong>이
+                금리(2%대) 면에서 압도적으로 유리합니다. 한도가 부족할 경우에만
+                보금자리론이나 시중은행 대출을 고려하세요.
               </p>
             </div>
             <div className="faq-item">
               <h4>Q. 금리는 언제 변경되나요?</h4>
               <p>
-                A. 변동금리는 매월 또는 분기별로 변경됩니다. 각 은행의
-                기준금리(COFIX, 금융채 등) 변동에 따라 조정되며, 가산금리는 은행
-                정책에 따라 수시로 변경될 수 있습니다.
+                A. 변동금리는 COFIX 기준 6개월 단위로 변경되며, 혼합형은 5년간
+                고정된 후 변동됩니다. 가산금리는 은행 정책에 따라 수시로 변경될
+                수 있습니다.
               </p>
             </div>
           </div>

@@ -13,19 +13,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px; /* 60px → 70px */
+  height: 70px;
 }
 
 .logo {
-  font-size: 1.5rem; /* 1.2rem → 1.5rem */
-  font-weight: 700; /* 600 → 700 */
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #333;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   transition: color 0.3s;
-  letter-spacing: -0.5px; /* 자간 조정 */
+  letter-spacing: -0.5px;
 }
 
 .logo:hover {
@@ -51,6 +51,29 @@
   color: #0066ff;
 }
 
+/* 🟢 [추가] 홍보용 링크 스타일 (버튼 형태) */
+.promo-link {
+  background-color: #e3f2fd; /* 연한 파란색 배경 */
+  color: #0066ff !important; /* 글자색 파란색 강제 */
+  padding: 8px 16px;
+  border-radius: 20px; /* 둥근 캡슐 모양 */
+  font-weight: 700;
+  margin-left: 5px;
+  border: 1px solid #0066ff;
+  transition: all 0.2s ease-in-out;
+  display: flex; /* 아이콘과 텍스트 정렬 */
+  align-items: center;
+  justify-content: center;
+}
+
+/* 홍보 링크 호버 효과 */
+.promo-link:hover {
+  background-color: #0066ff;
+  color: #ffffff !important; /* 호버 시 글자 흰색 */
+  transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+  box-shadow: 0 2px 5px rgba(0, 102, 255, 0.3);
+}
+
 /* 모바일 */
 @media (max-width: 768px) {
   .header-container {
@@ -59,17 +82,30 @@
   }
 
   .logo {
-    font-size: 1.2rem; /* 모바일에서는 조금 작게 */
+    font-size: 1.2rem;
   }
 
   .nav {
     gap: 1rem;
-    overflow-x: auto;
+    overflow-x: auto; /* 가로 스크롤 허용 */
     -webkit-overflow-scrolling: touch;
+    padding-right: 10px; /* 스크롤 끝 여백 */
+  }
+
+  /* 모바일에서 스크롤바 숨기기 (선택사항) */
+  .nav::-webkit-scrollbar {
+    display: none;
   }
 
   .nav-link {
     font-size: 0.85rem;
+  }
+
+  /* 🟢 [추가] 모바일에서 홍보 버튼 조정 */
+  .promo-link {
+    font-size: 0.8rem;
+    padding: 6px 12px; /* 패딩을 줄여서 높이 맞춤 */
+    border-radius: 15px;
   }
 }
 

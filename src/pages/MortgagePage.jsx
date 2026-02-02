@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
 import ResultCard from "../components/calculator/ResultCard";
 import PaymentTable from "../components/calculator/PaymentTable";
-import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
+import AdSense from "../components/common/AdSense";
 import {
   calculateEqualPayment,
   calculateEqualPrincipal,
@@ -10,26 +10,25 @@ import {
   calculateBulletPayment,
 } from "../utils/loanCalculations";
 import {
-  calculateMaxLoanAmount,
+  calculateMortgageLoanLimit,
   calculateDidimdolDiscount,
 } from "../utils/loanLimitCalculator";
-import { DIDIMDOL_LOAN, BOGEUMJARI_LOAN } from "../utils/loanPolicyData";
+import { DIDIMDOL_LOAN } from "../utils/loanPolicyData";
 import { formatCurrency } from "../utils/formatters";
 import "./MortgagePage.css";
 
 function MortgagePage() {
-  // 대출 유형
+  // 1. 상태 관리
   const [loanType, setLoanType] = useState("general"); // general, didimdol, bogeumjari
 
-  // 지역 정보
-  const [isMetropolitan, setIsMetropolitan] = useState(true);
-  const [isRegulated, setIsRegulated] = useState(false);
+  // 지역 및 주택 속성
+  const [isMetropolitan, setIsMetropolitan] = useState(true); // 수도권 여부
+  const [isApartment, setIsApartment] = useState(true); // 아파트 여부
+  const [isRegulated, setIsRegulated] = useState(false); // 규제지역 여부
 
-  // 주택 및 소득 정보 (억/천만원 단위로 입력)
-  const [housePriceInput, setHousePriceInput] = useState("5"); // 5억
-  const [annualIncomeInput, setAnnualIncomeInput] = useState("6"); // 6천만원
-
-  // 기존 부채 정보 (만원 단위)
+  // 입력값 상태 (초기값 0)
+  const [housePriceInput, setHousePriceInput] = useState("0");
+  const [annualIncomeInput, setAnnualIncomeInput] = useState("0");
   const [existingDebtInput, setExistingDebtInput] = useState("0");
   const [existingLoanMonthlyInput, setExistingLoanMonthlyInput] = useState("0");
 
@@ -41,57 +40,82 @@ function MortgagePage() {
   const [isElectronic, setIsElectronic] = useState(false);
 
   // 대출 조건
-  const [loanAmountInput, setLoanAmountInput] = useState("3"); // 3억
+  const [loanAmountInput, setLoanAmountInput] = useState("0");
   const [interestRate, setInterestRate] = useState("4.5");
   const [loanPeriod, setLoanPeriod] = useState("360");
-  const [gracePeriod, setGracePeriod] = useState("0"); // 거치 기간 (년) - 신규 추가
+  const [gracePeriod, setGracePeriod] = useState("0");
   const [repaymentType, setRepaymentType] = useState("equal");
 
-  // 계산 결과
+  // 결과 상태
   const [maxLoanResult, setMaxLoanResult] = useState(null);
   const [paymentResult, setPaymentResult] = useState(null);
   const [finalRate, setFinalRate] = useState(4.5);
 
-  // 실제 계산용 값 변환
+  // 2. 값 변환
   const housePrice = (parseFloat(housePriceInput) || 0) * 100000000;
   const annualIncome = (parseFloat(annualIncomeInput) || 0) * 10000000;
-  const existingDebt = (parseFloat(existingDebtInput) || 0) * 10000;
-  const existingLoanMonthly =
-    (parseFloat(existingLoanMonthlyInput) || 0) * 10000;
+
+  const annualDebt =
+    ((parseFloat(existingDebtInput) || 0) +
+      (parseFloat(existingLoanMonthlyInput) || 0)) *
+    10000 *
+    12;
+
   const loanAmount = (parseFloat(loanAmountInput) || 0) * 100000000;
 
-  // 최대 대출 한도 계산
+  // 3. 대출 유형 변경 시 초기화
   useEffect(() => {
-    const result = calculateMaxLoanAmount({
-      loanType,
+    // 유형 변경 시 거치기간 리셋 (정책대출은 1년 초과 불가하므로)
+    setGracePeriod("0");
+
+    if (loanType === "didimdol") {
+      setInterestRate("2.8");
+      setIsFirstHome(true);
+    } else if (loanType === "bogeumjari") {
+      setInterestRate("4.2");
+    } else {
+      setInterestRate("4.5");
+      setIsFirstHome(false);
+    }
+  }, [loanType]);
+
+  // 4. 최대 대출 한도 계산
+  useEffect(() => {
+    const result = calculateMortgageLoanLimit(
       housePrice,
       annualIncome,
-      interestRate: parseFloat(interestRate) || 0,
-      loanMonths: parseInt(loanPeriod) || 0,
+      annualDebt,
+      parseInt(loanPeriod) / 12,
+      parseFloat(interestRate) || 0,
+      loanType,
       isFirstHome,
-      isRegulated,
       isMetropolitan,
-      existingDebt,
-      existingLoanMonthly,
-      isNewlywed,
-    });
-
+      isApartment,
+    );
     setMaxLoanResult(result);
   }, [
     loanType,
     housePrice,
     annualIncome,
+    annualDebt,
     interestRate,
     loanPeriod,
     isFirstHome,
-    isRegulated,
     isMetropolitan,
-    existingDebt,
-    existingLoanMonthly,
-    isNewlywed,
+    isApartment,
   ]);
 
-  // 실제 금리 계산 (디딤돌대출 우대금리)
+  // 자동 입력: 최대 한도가 계산되면 희망 대출 금액에 자동 입력
+  useEffect(() => {
+    if (maxLoanResult && maxLoanResult.maxAmount > 0) {
+      const amountInEok = maxLoanResult.maxAmount / 100000000;
+      setLoanAmountInput(parseFloat(amountInEok.toFixed(2)).toString());
+    } else if (maxLoanResult && maxLoanResult.maxAmount === 0) {
+      setLoanAmountInput("0");
+    }
+  }, [maxLoanResult]);
+
+  // 5. 최종 금리 계산
   useEffect(() => {
     let baseRate = parseFloat(interestRate) || 0;
 
@@ -104,10 +128,14 @@ function MortgagePage() {
         hasSubscription,
         isElectronic,
       );
-      baseRate = Math.max(DIDIMDOL_LOAN.baseRate.min, baseRate + discount);
-    }
+      let calculatedRate = baseRate - discount;
+      if (calculatedRate < DIDIMDOL_LOAN.baseRate.min)
+        calculatedRate = DIDIMDOL_LOAN.baseRate.min;
 
-    setFinalRate(baseRate);
+      setFinalRate(parseFloat(calculatedRate.toFixed(2)));
+    } else {
+      setFinalRate(baseRate);
+    }
   }, [
     loanType,
     interestRate,
@@ -119,56 +147,42 @@ function MortgagePage() {
     isElectronic,
   ]);
 
-  // 상환 시뮬레이션 계산 (거치기간 적용)
+  // 6. 상환 시뮬레이션
   useEffect(() => {
     const principal = loanAmount;
     const rate = finalRate;
     const months = parseInt(loanPeriod) || 0;
-    const graceYears = parseInt(gracePeriod) || 0; // 거치 기간
+    const graceYears = parseInt(gracePeriod) || 0;
 
     if (principal <= 0 || rate < 0 || months <= 0) {
       setPaymentResult(null);
       return;
     }
 
-    let calculationResult;
+    let calc;
+    if (repaymentType === "equal")
+      calc = calculateEqualPayment(principal, rate, months, graceYears);
+    else if (repaymentType === "equalPrincipal")
+      calc = calculateEqualPrincipal(principal, rate, months, graceYears);
+    else if (repaymentType === "increasing")
+      calc = calculateIncreasingPayment(principal, rate, months);
+    else if (repaymentType === "bullet")
+      calc = calculateBulletPayment(principal, rate, months);
 
-    // 거치기간(graceYears)을 지원하는 함수에 인자 전달
-    if (repaymentType === "equal") {
-      calculationResult = calculateEqualPayment(
-        principal,
-        rate,
-        months,
-        graceYears,
-      );
-    } else if (repaymentType === "equalPrincipal") {
-      calculationResult = calculateEqualPrincipal(
-        principal,
-        rate,
-        months,
-        graceYears,
-      );
-    } else if (repaymentType === "increasing") {
-      calculationResult = calculateIncreasingPayment(principal, rate, months);
-    } else if (repaymentType === "bullet") {
-      calculationResult = calculateBulletPayment(principal, rate, months);
-    }
-
-    setPaymentResult(calculationResult);
+    setPaymentResult(calc);
   }, [loanAmount, finalRate, loanPeriod, repaymentType, gracePeriod]);
 
   return (
     <main className="main">
       <div className="page-header">
         <h2>🏠 주택담보대출 계산기</h2>
-        <p>2026년 최신 정책 반영 - LTV, DTI, DSR 및 거치기간 자동 계산</p>
+        <p>2026년 최신 규제 반영 (스트레스 DSR 3단계, 6.27 대책)</p>
       </div>
 
-      {/* 상단 광고: 페이지 제목 아래 높은 주목도 */}
       <AdSense slot="3924893287" label="Top Banner" />
 
       <div className="calculator-container">
-        {/* 대출 유형 선택 */}
+        {/* [1] 대출 유형 */}
         <div className="input-section">
           <h3>대출 유형</h3>
           <div className="loan-type-buttons">
@@ -193,86 +207,86 @@ function MortgagePage() {
           </div>
         </div>
 
-        {/* 지역 정보 */}
+        {/* [2] 주택 정보 */}
         <div className="input-section">
-          <h3>지역 정보</h3>
-
-          <div className="checkbox-group">
+          <h3>주택 정보</h3>
+          <div
+            className="checkbox-group"
+            style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}
+          >
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={isMetropolitan}
                 onChange={(e) => setIsMetropolitan(e.target.checked)}
               />
-              <span>수도권 (서울·경기·인천) - 스트레스 DSR 3단계</span>
+              <span>수도권 (서울·경기·인천)</span>
             </label>
-          </div>
-
-          <div className="checkbox-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={isApartment}
+                onChange={(e) => setIsApartment(e.target.checked)}
+              />
+              <span>아파트 (빌라/다세대 제외)</span>
+            </label>
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={isRegulated}
                 onChange={(e) => setIsRegulated(e.target.checked)}
               />
-              <span>규제지역 (투기과열지구 등)</span>
+              <span>규제지역 (강남3구/용산)</span>
             </label>
           </div>
+
+          {isMetropolitan && loanType === "didimdol" && isApartment && (
+            <div className="info-text">
+              💡 2026 규제: 수도권 아파트 디딤돌대출은 방공제(최우선변제금)가
+              필수 차감됩니다.
+            </div>
+          )}
+          {isMetropolitan && isFirstHome && loanType !== "didimdol" && (
+            <div className="info-text" style={{ marginTop: "5px" }}>
+              💡 6.27 대책: 수도권 생애최초 LTV는 80%가 아닌 70%로 제한됩니다.
+            </div>
+          )}
         </div>
 
-        {/* 주택 및 소득 정보 */}
+        {/* [3] 금액 및 소득 정보 */}
         <div className="input-section">
-          <h3>주택 및 소득 정보</h3>
-
+          <h3>금액 및 소득 정보</h3>
           <LoanInput
             label="주택 가격"
             value={housePriceInput}
             onChange={setHousePriceInput}
-            type="number"
             unit="억원"
-            min="0"
             step="0.1"
-            helpText="예: 5.5억원 → 5.5 입력"
           />
-
           <LoanInput
             label="연소득"
             value={annualIncomeInput}
             onChange={setAnnualIncomeInput}
-            type="number"
             unit="천만원"
-            min="0"
             step="0.1"
-            helpText="예: 6.5천만원 → 6.5 입력"
           />
-
           <LoanInput
             label="기존 신용대출 월 상환액"
             value={existingDebtInput}
             onChange={setExistingDebtInput}
-            type="number"
             unit="만원"
-            min="0"
-            step="1"
-            helpText="예: 50만원 → 50 입력"
           />
-
           <LoanInput
             label="기존 주택대출 월 상환액"
             value={existingLoanMonthlyInput}
             onChange={setExistingLoanMonthlyInput}
-            type="number"
             unit="만원"
-            min="0"
-            step="1"
-            helpText="예: 100만원 → 100 입력"
           />
         </div>
 
-        {/* 우대 조건 */}
+        {/* [4] 우대 조건 */}
         <div className="input-section">
           <h3>우대 조건</h3>
-
           <div className="checkbox-group">
             <label className="checkbox-label">
               <input
@@ -287,7 +301,7 @@ function MortgagePage() {
           </div>
 
           {loanType === "didimdol" && (
-            <>
+            <div style={{ marginTop: "10px" }}>
               <div className="checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -298,8 +312,7 @@ function MortgagePage() {
                   <span>신혼부부 (혼인 7년 이내) (-0.2%p)</span>
                 </label>
               </div>
-
-              <div className="loan-input">
+              <div className="loan-input" style={{ marginTop: "10px" }}>
                 <label className="loan-input-label">자녀 수</label>
                 <select
                   value={childrenCount}
@@ -312,7 +325,6 @@ function MortgagePage() {
                   <option value="3">3명 이상 (-0.7%p)</option>
                 </select>
               </div>
-
               <div className="checkbox-group">
                 <label className="checkbox-label">
                   <input
@@ -320,12 +332,12 @@ function MortgagePage() {
                     checked={hasSubscription}
                     onChange={(e) => setHasSubscription(e.target.checked)}
                   />
-                  <span>청약저축 6개월 이상 (-0.3%p)</span>
+                  <span>청약저축 6개월+ (-0.2%p)</span>
                 </label>
-              </div>
-
-              <div className="checkbox-group">
-                <label className="checkbox-label">
+                <label
+                  className="checkbox-label"
+                  style={{ marginLeft: "15px" }}
+                >
                   <input
                     type="checkbox"
                     checked={isElectronic}
@@ -334,18 +346,17 @@ function MortgagePage() {
                   <span>전자계약 (-0.1%p)</span>
                 </label>
               </div>
-            </>
+            </div>
           )}
         </div>
 
-        {/* 최대 대출 한도 결과 */}
+        {/* [5] 최대 대출 한도 결과 */}
         {maxLoanResult && (
           <div className="max-loan-section">
             <h3>최대 대출 가능액</h3>
-
-            {maxLoanResult.errors.length > 0 ? (
+            {maxLoanResult.errors && maxLoanResult.errors.length > 0 ? (
               <div className="error-box">
-                <h4>❌ 정책대출 자격 미충족</h4>
+                <h4>❌ 대출 불가 사유</h4>
                 <ul>
                   {maxLoanResult.errors.map((error, index) => (
                     <li key={index}>{error}</li>
@@ -362,79 +373,56 @@ function MortgagePage() {
                     제한 요인: {maxLoanResult.limitingFactor}
                   </div>
                 </div>
-
                 <div className="limit-details">
                   <div className="limit-item">
-                    <span>LTV 한도:</span>
-                    <span>
-                      {formatCurrency(maxLoanResult.details.ltvLimit)}
-                    </span>
+                    <span>LTV 기준 ({maxLoanResult.appliedLtv}%):</span>
+                    <span>{formatCurrency(maxLoanResult.ltvLimit)}</span>
                   </div>
                   <div className="limit-item">
-                    <span>DTI 한도:</span>
+                    <span>소득 기준 ({maxLoanResult.limitType}):</span>
+                    <span>{formatCurrency(maxLoanResult.incomeLimit)}</span>
+                  </div>
+                  <div className="limit-item">
+                    <span>상품 한도:</span>
                     <span>
-                      {formatCurrency(maxLoanResult.details.dtiLimit)}
+                      {maxLoanResult.maxLoanCap > 9000000000
+                        ? "제한없음"
+                        : formatCurrency(maxLoanResult.maxLoanCap)}
                     </span>
                   </div>
-                  {maxLoanResult.details.dsrLimit && (
-                    <div className="limit-item">
-                      <span>DSR 한도:</span>
-                      <span>
-                        {formatCurrency(maxLoanResult.details.dsrLimit)}
-                      </span>
-                    </div>
-                  )}
-                  {maxLoanResult.details.policyMaxLimit && (
-                    <div className="limit-item">
-                      <span>정책대출 한도:</span>
-                      <span>
-                        {formatCurrency(maxLoanResult.details.policyMaxLimit)}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </>
             )}
           </div>
         )}
 
-        {/* 대출 조건 입력 */}
+        {/* [6] 상환 시뮬레이션 */}
         <div className="input-section">
-          <h3>대출 조건 상세</h3>
-
+          <h3>상환 시뮬레이션</h3>
           <LoanInput
-            label="대출 금액"
+            label="희망 대출 금액"
             value={loanAmountInput}
             onChange={setLoanAmountInput}
-            type="number"
             unit="억원"
-            min="0"
             step="0.1"
-            helpText="예: 3.5억원 → 3.5 입력"
+            helpText={`최대 ${maxLoanResult ? formatCurrency(maxLoanResult.maxAmount) : "-"}까지 가능`}
           />
-
           <LoanInput
             label={
-              loanType === "didimdol"
-                ? "기준 금리 (우대금리 적용 전)"
-                : "연 이자율"
+              loanType === "didimdol" ? "기준 금리 (우대 전)" : "연 이자율"
             }
             value={interestRate}
             onChange={setInterestRate}
-            type="number"
             unit="%"
-            min="0"
-            max="20"
             step="0.1"
           />
 
           {loanType === "didimdol" &&
             finalRate !== parseFloat(interestRate) && (
               <div className="discount-info">
-                <strong>최종 적용 금리: {finalRate.toFixed(2)}%</strong>
+                <strong>최종 금리: {finalRate.toFixed(2)}%</strong>
                 <span>
-                  (우대금리 {(finalRate - parseFloat(interestRate)).toFixed(2)}
-                  %p 적용)
+                  (우대 -{(parseFloat(interestRate) - finalRate).toFixed(2)}%p)
                 </span>
               </div>
             )}
@@ -446,40 +434,22 @@ function MortgagePage() {
               onChange={(e) => setLoanPeriod(e.target.value)}
               className="loan-select"
             >
-              <option value="60">5년 (60개월)</option>
-              <option value="120">10년 (120개월)</option>
-              <option value="180">15년 (180개월)</option>
-              <option value="240">20년 (240개월)</option>
-              <option value="300">25년 (300개월)</option>
-              <option value="360">30년 (360개월)</option>
-              {loanType === "bogeumjari" && (
-                <>
-                  <option value="480">40년 (480개월)</option>
-                  <option value="600">50년 (600개월) - 만 34세 이하</option>
-                </>
+              <option value="120">10년</option>
+              <option value="180">15년</option>
+              <option value="240">20년</option>
+              <option value="360">30년</option>
+              {loanType !== "general" && (
+                <option value="480">40년 (만39세↓/신혼)</option>
               )}
               {loanType === "general" && !isMetropolitan && (
-                <option value="480">40년 (480개월) - 비수도권</option>
+                <option value="480">40년 (비수도권)</option>
+              )}
+              {(loanType !== "general" || !isMetropolitan) && (
+                <option value="600">50년 (만34세↓)</option>
               )}
             </select>
-            {loanType === "didimdol" && (
-              <div className="info-text">
-                💡 디딤돌대출은 최장 30년까지 가능합니다
-              </div>
-            )}
-            {loanType === "bogeumjari" && (
-              <div className="info-text">
-                💡 만 34세 이하 청년은 최장 50년까지 가능합니다
-              </div>
-            )}
-            {loanType === "general" && isMetropolitan && (
-              <div className="info-text">
-                💡 수도권은 최장 30년까지 가능합니다
-              </div>
-            )}
           </div>
 
-          {/* 거치 기간 (신규 기능) */}
           <div className="loan-input">
             <label className="loan-input-label">거치 기간 (이자만 납부)</label>
             <select
@@ -489,12 +459,21 @@ function MortgagePage() {
             >
               <option value="0">없음</option>
               <option value="1">1년</option>
-              <option value="2">2년</option>
-              <option value="3">3년</option>
-              <option value="5">5년</option>
+              {/* 🟢 일반 대출일 때만 장기 거치 옵션 활성화 */}
+              {loanType === "general" && (
+                <>
+                  <option value="2">2년</option>
+                  <option value="3">3년</option>
+                  <option value="5">5년</option>
+                  <option value="10">10년</option>
+                </>
+              )}
             </select>
-            <div className="info-text">
-              💡 거치기간 동안은 원금 상환 없이 이자만 납부합니다.
+            {/* 문구 동적 표시 */}
+            <div className="info-text" style={{ fontSize: "0.8rem" }}>
+              {loanType === "general"
+                ? "※ 은행별 거치 가능 기간 상이 (통상 1년)"
+                : "※ 정책대출은 최대 1년 거치 가능"}
             </div>
           </div>
 
@@ -519,22 +498,13 @@ function MortgagePage() {
               >
                 체증식
               </button>
-              <button
-                className={`type-btn ${repaymentType === "bullet" ? "active" : ""}`}
-                onClick={() => setRepaymentType("bullet")}
-              >
-                만기일시
-              </button>
             </div>
           </div>
         </div>
 
-        {/* 상환 시뮬레이션 */}
+        {/* [7] 결과 카드 */}
         {paymentResult && (
           <div className="result-section">
-            <h3>상환 시뮬레이션</h3>
-
-            {/* SEO 최적화 및 사용자 요약 (신규) */}
             <div
               className="seo-summary"
               style={{
@@ -542,19 +512,18 @@ function MortgagePage() {
                 padding: "1rem",
                 borderRadius: "8px",
                 marginBottom: "1.5rem",
-                lineHeight: "1.6",
                 color: "#333",
               }}
             >
               <p>
-                고객님이 신청하신 <strong>{formatCurrency(loanAmount)}</strong>{" "}
-                대출에 대해 <strong>{parseInt(loanPeriod) / 12}년</strong> 동안
-                금리 <strong>{finalRate}%</strong>로 상환할 경우, 총 납부해야 할
-                이자는{" "}
-                <strong>{formatCurrency(paymentResult.totalInterest)}</strong>
+                <strong>
+                  {formatCurrency(parseFloat(loanAmountInput) * 100000000)}
+                </strong>{" "}
+                대출 시<strong> {finalRate}%</strong> 금리로
+                <strong> {parseInt(loanPeriod) / 12}년</strong> 동안 상환하면,
+                총 이자는{" "}
+                <strong>{formatCurrency(paymentResult.totalInterest)}</strong>{" "}
                 입니다.
-                {parseInt(gracePeriod) > 0 &&
-                  ` 초기 ${gracePeriod}년 동안은 거치기간으로 설정되어 이자만 납부하게 됩니다.`}
               </p>
             </div>
 
@@ -592,13 +561,6 @@ function MortgagePage() {
                   />
                 </>
               )}
-              {repaymentType === "bullet" && (
-                <ResultCard
-                  title="월 이자"
-                  value={paymentResult.monthlyInterest}
-                  highlight={true}
-                />
-              )}
               <ResultCard
                 title="총 상환액"
                 value={paymentResult.totalPayment}
@@ -606,15 +568,12 @@ function MortgagePage() {
               <ResultCard title="총 이자" value={paymentResult.totalInterest} />
             </div>
 
-            {/* 중간 광고: 결과 카드 확인 후 상세 내역 보기 전 클릭률 높은 위치 */}
             <AdSense slot="1616685917" label="Middle Banner" />
-
             <PaymentTable schedule={paymentResult.schedule} />
           </div>
         )}
       </div>
 
-      {/* 하단 광고 */}
       <AdSense slot="2611811617" label="Bottom Banner" />
     </main>
   );

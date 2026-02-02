@@ -1,3 +1,4 @@
+// src/utils/loanLimitCalculator.js
 import {
   DIDIMDOL_LOAN,
   BOGEUMJARI_LOAN,
@@ -5,118 +6,256 @@ import {
   DIDIMDOL_DISCOUNTS,
   STRESS_DSR,
   DSR_REGULATION,
+  ROOM_DEDUCTION,
+  CREDIT_LOAN,
 } from "./loanPolicyData";
 
-// LTV 기반 대출 한도 계산
-export function calculateLTVLimit(
+// [LTV 계산] 지역에 따라 70/80% 분기 처리
+function calculateLTVLimit(
   housePrice,
   loanType,
   isFirstHome,
-  isRegulated,
+  isMetropolitan,
+  isApartment,
 ) {
-  let ltvRatio;
+  let ltvRatio = 70;
 
   if (loanType === "didimdol") {
-    ltvRatio = isFirstHome
-      ? DIDIMDOL_LOAN.ltv.firstHome
-      : DIDIMDOL_LOAN.ltv.general;
-  } else if (loanType === "bogeumjari") {
-    ltvRatio = isFirstHome
-      ? BOGEUMJARI_LOAN.ltv.firstHome
-      : BOGEUMJARI_LOAN.ltv.general;
-  } else {
-    // 일반 주택담보대출
-    if (isRegulated) {
-      ltvRatio = isFirstHome
-        ? GENERAL_MORTGAGE.ltv.regulatedFirstHome
-        : GENERAL_MORTGAGE.ltv.regulated;
+    if (isFirstHome) {
+      ltvRatio = isMetropolitan
+        ? DIDIMDOL_LOAN.ltv.firstHomeMetro
+        : DIDIMDOL_LOAN.ltv.firstHomeNonMetro;
     } else {
-      ltvRatio = isFirstHome
-        ? GENERAL_MORTGAGE.ltv.firstHome
-        : GENERAL_MORTGAGE.ltv.general;
+      ltvRatio = DIDIMDOL_LOAN.ltv.general;
+    }
+  } else if (loanType === "bogeumjari") {
+    if (isFirstHome) {
+      ltvRatio = isMetropolitan
+        ? BOGEUMJARI_LOAN.ltv.firstHomeMetro
+        : BOGEUMJARI_LOAN.ltv.firstHomeNonMetro;
+    } else {
+      ltvRatio = BOGEUMJARI_LOAN.ltv.general;
+    }
+  } else {
+    // 시중은행
+    if (isFirstHome) {
+      ltvRatio = isMetropolitan
+        ? GENERAL_MORTGAGE.ltv.firstHomeMetro
+        : GENERAL_MORTGAGE.ltv.firstHomeNonMetro;
+    } else {
+      ltvRatio = GENERAL_MORTGAGE.ltv.general;
     }
   }
 
-  return housePrice * (ltvRatio / 100);
-}
+  let limit = housePrice * (ltvRatio / 100);
 
-// DTI 기반 대출 한도 계산
-export function calculateDTILimit(
-  annualIncome,
-  loanAmount,
-  interestRate,
-  loanMonths,
-  existingDebt = 0,
-) {
-  const monthlyIncome = annualIncome / 12;
-  const dtiRatio = 60; // 60% 고정
-
-  // 가능한 월 상환액
-  const maxMonthlyPayment = monthlyIncome * (dtiRatio / 100) - existingDebt;
-
-  if (maxMonthlyPayment <= 0) {
-    return 0;
+  // [방공제] 디딤돌 + 수도권 + 아파트 = 필수 차감
+  if (loanType === "didimdol" && isMetropolitan && isApartment) {
+    limit -= ROOM_DEDUCTION.metropolitan_overcrowded;
   }
 
-  // 월이율
+  return limit;
+}
+
+// [DTI 계산]
+function calculateDTILimit(
+  annualIncome,
+  interestRate,
+  loanMonths,
+  existingLoanMonthly,
+) {
+  if (annualIncome <= 0) return 0;
+  const monthlyIncome = annualIncome / 12;
   const monthlyRate = interestRate / 12 / 100;
+  const dtiRatio = 60;
 
-  if (monthlyRate === 0) {
-    return maxMonthlyPayment * loanMonths;
-  }
+  const availableMonthlyPayment =
+    monthlyIncome * (dtiRatio / 100) - existingLoanMonthly;
 
-  // 역산: 월 상환액으로부터 대출 원금 계산 (원리금균등 기준)
-  const maxLoanAmount =
-    (maxMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
-    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths));
+  if (availableMonthlyPayment <= 0) return 0;
+  if (monthlyRate === 0) return availableMonthlyPayment * loanMonths;
 
-  return maxLoanAmount;
+  return (
+    (availableMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
+    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths))
+  );
 }
 
-// DSR 기반 대출 한도 계산 (스트레스 DSR 포함)
-export function calculateDSRLimit(
+// [DSR 계산]
+function calculateDSRLimit(
   annualIncome,
   interestRate,
   loanMonths,
-  existingLoanMonthly = 0,
-  isMetropolitan = true,
+  existingLoanMonthly,
+  isMetropolitan,
 ) {
+  if (annualIncome <= 0) return 0;
   const monthlyIncome = annualIncome / 12;
-  const dsrRatio = DSR_REGULATION.maxRatio; // 40%
+  const dsrRatio = DSR_REGULATION.maxRatio;
 
-  // 스트레스 금리 적용
-  let stressRate;
-  if (isMetropolitan) {
-    stressRate = interestRate + STRESS_DSR.metropolitan.stressRate;
-  } else {
-    stressRate = interestRate + STRESS_DSR.regional.stressRate;
-  }
+  const stressRateValue = isMetropolitan
+    ? STRESS_DSR.metropolitan.stressRate
+    : STRESS_DSR.regional.stressRate;
 
-  const monthlyRate = stressRate / 12 / 100;
+  const applyRate = interestRate + stressRateValue;
+  const monthlyRate = applyRate / 12 / 100;
 
-  // 가능한 총 월 상환액
-  const maxTotalMonthlyPayment = monthlyIncome * (dsrRatio / 100);
+  const availableMonthlyPayment =
+    monthlyIncome * (dsrRatio / 100) - existingLoanMonthly;
 
-  // 신규 대출에 사용 가능한 월 상환액
-  const availableMonthlyPayment = maxTotalMonthlyPayment - existingLoanMonthly;
+  if (availableMonthlyPayment <= 0) return 0;
+  if (monthlyRate === 0) return availableMonthlyPayment * loanMonths;
 
-  if (availableMonthlyPayment <= 0) {
-    return 0;
-  }
-
-  if (monthlyRate === 0) {
-    return availableMonthlyPayment * loanMonths;
-  }
-
-  // 역산: 월 상환액으로부터 대출 원금 계산
-  const maxLoanAmount =
+  return (
     (availableMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
-    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths));
-
-  return maxLoanAmount;
+    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths))
+  );
 }
 
-// 디딤돌대출 우대금리 계산
+// [메인 함수]
+export function calculateMortgageLoanLimit(
+  housePrice,
+  annualIncome,
+  annualDebt,
+  loanPeriodYears,
+  interestRate,
+  loanType,
+  isFirstTime,
+  isMetropolitan = true,
+  isApartment = true,
+) {
+  const loanMonths = loanPeriodYears * 12;
+  const existingLoanMonthly = annualDebt / 12;
+
+  // 1. 자격 검증
+  if (loanType !== "general") {
+    const eligibility = checkPolicyLoanEligibility(
+      loanType,
+      housePrice,
+      annualIncome,
+      true,
+    );
+    if (!eligibility.isEligible) {
+      return {
+        maxAmount: 0,
+        limitingFactor: "자격 미달 (집값/소득)",
+        errors: eligibility.errors,
+        details: {
+          ltvLimit: 0,
+          incomeLimit: 0,
+          maxLoanCap: 0,
+          limitType: "자격미달",
+        },
+      };
+    }
+  }
+
+  // 2. LTV 한도
+  const ltvLimit = calculateLTVLimit(
+    housePrice,
+    loanType,
+    isFirstTime,
+    isMetropolitan,
+    isApartment,
+  );
+
+  // 3. 소득 한도
+  let incomeLimit = 0;
+  let incomeLimitType = "";
+
+  if (loanType === "general") {
+    incomeLimit = calculateDSRLimit(
+      annualIncome,
+      interestRate,
+      loanMonths,
+      existingLoanMonthly,
+      isMetropolitan,
+    );
+    incomeLimitType = isMetropolitan
+      ? "DSR 40% (스트레스 1.2%)"
+      : "DSR 40% (스트레스 0.75%)";
+  } else {
+    incomeLimit = calculateDTILimit(
+      annualIncome,
+      interestRate,
+      loanMonths,
+      existingLoanMonthly,
+    );
+    incomeLimitType = "DTI 60%";
+  }
+
+  // 4. 상품 한도 (Product Cap)
+  let productCap = Infinity;
+
+  if (loanType === "didimdol") {
+    if (isFirstTime) productCap = DIDIMDOL_LOAN.maxAmount.firstHome;
+    else productCap = DIDIMDOL_LOAN.maxAmount.general;
+  } else if (loanType === "bogeumjari") {
+    // 🚨 [수정됨] 수도권 여부 상관없이 생애최초면 4.2억 한도 적용
+    // (단, LTV가 70%로 제한되므로 실제 대출액은 줄어들 수 있음)
+    if (isFirstTime) {
+      productCap = BOGEUMJARI_LOAN.maxAmount.firstHome; // 4.2억
+    } else {
+      productCap = BOGEUMJARI_LOAN.maxAmount.general; // 3.6억
+    }
+  } else {
+    productCap = isFirstTime
+      ? GENERAL_MORTGAGE.maxAmount.firstHome
+      : GENERAL_MORTGAGE.maxAmount.unlimited;
+  }
+
+  // 5. 최종 한도
+  const maxAmount = Math.floor(Math.min(ltvLimit, incomeLimit, productCap));
+
+  let limitingFactor = "";
+  if (maxAmount === productCap)
+    limitingFactor = `상품 한도 (${(productCap / 100000000).toFixed(1)}억)`;
+  else if (maxAmount === ltvLimit) {
+    const ltvTxt = isFirstTime && !isMetropolitan ? "80%" : "70%";
+    const deductTxt =
+      loanType === "didimdol" && isMetropolitan && isApartment ? "-방공제" : "";
+    limitingFactor = `LTV 한도 (${ltvTxt}${deductTxt})`;
+  } else if (maxAmount === incomeLimit)
+    limitingFactor = `소득 한도 (${incomeLimitType})`;
+
+  return {
+    maxAmount: isNaN(maxAmount) ? 0 : maxAmount,
+    limitingFactor,
+    ltvLimit: Math.floor(ltvLimit),
+    incomeLimit: Math.floor(incomeLimit),
+    maxLoanCap: productCap === Infinity ? 99999999999 : productCap,
+    limitType: incomeLimitType,
+    appliedLtv: isFirstTime && isMetropolitan ? 70 : isFirstTime ? 80 : 70,
+  };
+}
+
+export function checkPolicyLoanEligibility(
+  loanType,
+  housePrice,
+  annualIncome,
+  isNewlywed,
+) {
+  const errors = [];
+  if (loanType === "didimdol") {
+    const priceLimit = isNewlywed
+      ? DIDIMDOL_LOAN.maxHousePrice.newlywed
+      : DIDIMDOL_LOAN.maxHousePrice.general;
+    if (housePrice > priceLimit)
+      errors.push(`주택가격 ${(priceLimit / 100000000).toFixed(1)}억 초과`);
+    const incomeLimit = isNewlywed
+      ? DIDIMDOL_LOAN.maxIncome.newlywed
+      : DIDIMDOL_LOAN.maxIncome.general;
+    if (annualIncome > incomeLimit)
+      errors.push(`연소득 ${(incomeLimit / 10000000).toFixed(0)}천만원 초과`);
+  } else if (loanType === "bogeumjari") {
+    if (housePrice > BOGEUMJARI_LOAN.maxHousePrice)
+      errors.push(`주택가격 6억 초과`);
+    if (annualIncome > BOGEUMJARI_LOAN.maxIncome)
+      errors.push(`연소득 1억 초과`);
+  }
+  return { isEligible: errors.length === 0, errors };
+}
+
 export function calculateDidimdolDiscount(
   income,
   isFirstHome,
@@ -125,257 +264,53 @@ export function calculateDidimdolDiscount(
   hasSubscription,
   isElectronic,
 ) {
-  let totalDiscount = 0;
-
-  // 소득별 우대
-  if (income <= 20000000) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.income.under20M;
-  } else if (income <= 40000000) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.income["20to40M"];
-  }
-
-  // 생애최초
-  if (isFirstHome) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.firstHome;
-  }
-
-  // 신혼부부
-  if (isNewlywed) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.newlywed;
-  }
-
-  // 자녀수
-  if (childrenCount === 1) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.children.one;
-  } else if (childrenCount === 2) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.children.two;
-  } else if (childrenCount >= 3) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.children.three;
-  }
-
-  // 청약저축
-  if (hasSubscription) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.subscription;
-  }
-
-  // 전자계약
-  if (isElectronic) {
-    totalDiscount += DIDIMDOL_DISCOUNTS.electronic;
-  }
-
-  return totalDiscount;
+  let discount = 0;
+  if (income <= 20000000) discount += 0.5;
+  else if (income <= 40000000) discount += 0.2;
+  if (isFirstHome) discount += 0.2;
+  if (isNewlywed) discount += 0.2;
+  if (childrenCount >= 3) discount += 0.7;
+  else if (childrenCount === 2) discount += 0.5;
+  else if (childrenCount === 1) discount += 0.3;
+  if (hasSubscription) discount += 0.2;
+  if (isElectronic) discount += 0.1;
+  return parseFloat(discount.toFixed(2));
 }
 
-// 정책대출 자격 검증
-export function checkPolicyLoanEligibility(
-  loanType,
-  housePrice,
-  annualIncome,
-  isNewlywed,
-) {
-  const errors = [];
-
-  if (loanType === "didimdol") {
-    // 주택가격 검증
-    if (housePrice > DIDIMDOL_LOAN.maxHousePrice) {
-      errors.push(
-        `주택 가격이 ${(DIDIMDOL_LOAN.maxHousePrice / 100000000).toFixed(1)}억원을 초과합니다`,
-      );
-    }
-
-    // 소득 검증
-    const maxIncome = isNewlywed
-      ? DIDIMDOL_LOAN.maxIncome.newlywed
-      : DIDIMDOL_LOAN.maxIncome.general;
-    if (annualIncome > maxIncome) {
-      errors.push(
-        `연소득이 ${(maxIncome / 10000000).toFixed(0)}천만원을 초과합니다`,
-      );
-    }
-  } else if (loanType === "bogeumjari") {
-    // 소득 검증
-    if (annualIncome > BOGEUMJARI_LOAN.maxIncome) {
-      errors.push(
-        `연소득이 ${(BOGEUMJARI_LOAN.maxIncome / 100000000).toFixed(0)}억원을 초과합니다`,
-      );
-    }
-  }
-
-  return {
-    isEligible: errors.length === 0,
-    errors,
-  };
-}
-
-// 최종 대출 한도 계산 (LTV, DTI, DSR 중 최소값)
-export function calculateMaxLoanAmount(params) {
-  const {
-    loanType,
-    housePrice,
-    annualIncome,
-    interestRate,
-    loanMonths,
-    isFirstHome,
-    isRegulated,
-    isMetropolitan,
-    existingDebt,
-    existingLoanMonthly,
-    isNewlywed,
-  } = params;
-
-  // 정책대출 자격 검증
-  if (loanType !== "general") {
-    const eligibility = checkPolicyLoanEligibility(
-      loanType,
-      housePrice,
-      annualIncome,
-      isNewlywed,
-    );
-    if (!eligibility.isEligible) {
-      return {
-        maxAmount: 0,
-        limitingFactor: "eligibility",
-        errors: eligibility.errors,
-        details: {},
-      };
-    }
-  }
-
-  // LTV 한도
-  const ltvLimit = calculateLTVLimit(
-    housePrice,
-    loanType,
-    isFirstHome,
-    isRegulated,
-  );
-
-  // DTI 한도
-  const dtiLimit = calculateDTILimit(
-    annualIncome,
-    housePrice,
-    interestRate,
-    loanMonths,
-    existingDebt,
-  );
-
-  // DSR 한도 (1억 초과 시만 적용)
-  let dsrLimit = Infinity;
-  if (housePrice > DSR_REGULATION.threshold) {
-    dsrLimit = calculateDSRLimit(
-      annualIncome,
-      interestRate,
-      loanMonths,
-      existingLoanMonthly,
-      isMetropolitan,
-    );
-  }
-
-  // 정책대출 최대 한도
-  let policyMaxLimit = Infinity;
-  if (loanType === "didimdol") {
-    if (isFirstHome) {
-      policyMaxLimit = DIDIMDOL_LOAN.maxAmount.firstHome;
-    } else if (isNewlywed) {
-      policyMaxLimit = DIDIMDOL_LOAN.maxAmount.newlywed;
-    } else {
-      policyMaxLimit = DIDIMDOL_LOAN.maxAmount.general;
-    }
-  } else if (loanType === "bogeumjari") {
-    policyMaxLimit = BOGEUMJARI_LOAN.maxAmount;
-  }
-
-  // 최소값 선택
-  const limits = [ltvLimit, dtiLimit, dsrLimit, policyMaxLimit];
-  const maxAmount = Math.min(...limits);
-
-  let limitingFactor;
-  if (maxAmount === ltvLimit) {
-    limitingFactor = "LTV";
-  } else if (maxAmount === dtiLimit) {
-    limitingFactor = "DTI";
-  } else if (maxAmount === dsrLimit) {
-    limitingFactor = "DSR";
-  } else {
-    limitingFactor = "정책대출 한도";
-  }
-
-  return {
-    maxAmount,
-    limitingFactor,
-    errors: [],
-    details: {
-      ltvLimit,
-      dtiLimit,
-      dsrLimit: dsrLimit === Infinity ? null : dsrLimit,
-      policyMaxLimit: policyMaxLimit === Infinity ? null : policyMaxLimit,
-    },
-  };
-}
-
-// 신용대출 최대 한도 계산
 export function calculateCreditLoanLimit(
   annualIncome,
   existingLoanMonthly,
-  loanMonths,
+  loanPeriodYears,
   interestRate,
 ) {
-  // 1. 연소득 기준 한도 (연소득의 1배)
-  const incomeLimit = annualIncome * 1.0;
-
-  // 2. DSR 기준 한도 (40%)
-  const monthlyIncome = annualIncome / 12;
-  const dsrRatio = DSR_REGULATION.maxRatio; // 40%
-
-  // 스트레스 금리 적용 (신용대출은 +3.0%p)
-  const stressRate = interestRate + 3.0;
+  const loanMonths = loanPeriodYears * 12;
+  const incomeLimit = annualIncome * CREDIT_LOAN.maxRatio;
+  const dsrRatio = CREDIT_LOAN.dsr;
+  const stressRate = interestRate + 1.5;
   const monthlyRate = stressRate / 12 / 100;
+  const availableMonthlyPayment =
+    (annualIncome / 12) * (dsrRatio / 100) - existingLoanMonthly;
 
-  // 가능한 총 월 상환액
-  const maxTotalMonthlyPayment = monthlyIncome * (dsrRatio / 100);
-
-  // 신규 대출에 사용 가능한 월 상환액
-  const availableMonthlyPayment = maxTotalMonthlyPayment - existingLoanMonthly;
-
-  if (availableMonthlyPayment <= 0) {
+  if (availableMonthlyPayment <= 0)
     return {
       maxAmount: 0,
-      limitingFactor: "DSR",
-      errors: ["기존 대출로 인해 추가 대출이 불가능합니다"],
-      details: {
-        incomeLimit,
-        dsrLimit: 0,
-      },
+      limitingFactor: "DSR 초과",
+      errors: ["기존 대출 과다"],
+      details: { incomeLimit, dsrLimit: 0 },
     };
-  }
 
-  if (monthlyRate === 0) {
-    return {
-      maxAmount: Math.min(incomeLimit, availableMonthlyPayment * loanMonths),
-      limitingFactor:
-        incomeLimit < availableMonthlyPayment * loanMonths ? "소득" : "DSR",
-      errors: [],
-      details: {
-        incomeLimit,
-        dsrLimit: availableMonthlyPayment * loanMonths,
-      },
-    };
-  }
+  let dsrLimit = 0;
+  if (monthlyRate === 0) dsrLimit = availableMonthlyPayment * loanMonths;
+  else
+    dsrLimit =
+      (availableMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
+      (monthlyRate * Math.pow(1 + monthlyRate, loanMonths));
 
-  // 역산: 월 상환액으로부터 대출 원금 계산
-  const dsrLimit =
-    (availableMonthlyPayment * (Math.pow(1 + monthlyRate, loanMonths) - 1)) /
-    (monthlyRate * Math.pow(1 + monthlyRate, loanMonths));
-
-  const maxAmount = Math.min(incomeLimit, dsrLimit);
-  const limitingFactor = maxAmount === incomeLimit ? "소득" : "DSR";
-
+  const maxAmount = Math.floor(Math.min(incomeLimit, dsrLimit));
   return {
     maxAmount,
-    limitingFactor,
+    limitingFactor: maxAmount === incomeLimit ? "연소득 1배 제한" : "DSR 제한",
     errors: [],
-    details: {
-      incomeLimit,
-      dsrLimit,
-    },
+    details: { incomeLimit, dsrLimit },
   };
 }

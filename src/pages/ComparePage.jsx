@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import LoanInput from "../components/calculator/LoanInput";
-import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
+import AdSense from "../components/common/AdSense";
 import {
   calculateEqualPayment,
   calculateEqualPrincipal,
@@ -14,8 +14,8 @@ function ComparePage() {
   // 대출 유형
   const [loanType, setLoanType] = useState("mortgage"); // mortgage(주택담보), credit(신용)
 
-  // 입력 값 (억원/천만원 단위)
-  const [loanAmountInput, setLoanAmountInput] = useState("3");
+  // 입력 값 (억원/천만원 단위) - 초기값 0으로 설정
+  const [loanAmountInput, setLoanAmountInput] = useState("0");
   const [interestRate, setInterestRate] = useState("4.5");
   const [loanPeriod, setLoanPeriod] = useState("360");
 
@@ -31,13 +31,13 @@ function ComparePage() {
   // 대출 유형 변경 시 기본값 조정
   useEffect(() => {
     if (loanType === "mortgage") {
-      setLoanAmountInput("3"); // 3억
+      setLoanAmountInput("3"); // 3억 (예시값)
       setInterestRate("4.5");
       setLoanPeriod("360");
     } else {
-      setLoanAmountInput("3"); // 3천만원
-      setInterestRate("8.5");
-      setLoanPeriod("36");
+      setLoanAmountInput("5"); // 5천만원 (예시값)
+      setInterestRate("6.5");
+      setLoanPeriod("60");
     }
   }, [loanType]);
 
@@ -46,17 +46,25 @@ function ComparePage() {
     const principal = loanAmount;
     const rate = parseFloat(interestRate) || 0;
     const months = parseInt(loanPeriod) || 0;
+    const gracePeriod = 0; // 비교 페이지는 거치기간 없이 순수 비교
 
     if (principal <= 0 || rate < 0 || months <= 0) {
       setResults(null);
       return;
     }
 
-    const equalPaymentResult = calculateEqualPayment(principal, rate, months);
+    // 함수 호출 시 gracePeriod 파라미터 전달 (기본값 0이지만 명시)
+    const equalPaymentResult = calculateEqualPayment(
+      principal,
+      rate,
+      months,
+      gracePeriod,
+    );
     const equalPrincipalResult = calculateEqualPrincipal(
       principal,
       rate,
       months,
+      gracePeriod,
     );
     const increasingPaymentResult = calculateIncreasingPayment(
       principal,
@@ -172,7 +180,7 @@ function ComparePage() {
           <div className="result-section">
             <h3>상환 방식 비교 결과</h3>
 
-            {/* 스마트 분석 리포트 (SEO 및 체류시간 증대) */}
+            {/* 스마트 분석 리포트 */}
             <div
               className="seo-summary"
               style={{
@@ -279,7 +287,7 @@ function ComparePage() {
               </table>
             </div>
 
-            {/* 중간 광고: 표 확인 후 상세 설명 보기 전 (클릭률 높음) */}
+            {/* 중간 광고 */}
             <AdSense slot="1616685917" label="Middle Banner" />
 
             {/* 각 방식 특징 */}

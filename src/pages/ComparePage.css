@@ -97,6 +97,16 @@
   color: #333;
 }
 
+/* SEO 요약 박스 (추가됨) */
+.seo-summary {
+  background: #e3f2fd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  color: #333;
+}
+
 .comparison-table-wrapper {
   overflow-x: auto;
   margin-bottom: 2rem;
