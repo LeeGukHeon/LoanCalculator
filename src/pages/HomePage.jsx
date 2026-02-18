@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
+import AdSense from "../components/common/AdSense";
 import "./HomePage.css";
 
 function HomePage() {
@@ -13,13 +13,6 @@ function HomePage() {
           2026년 최신 규제(DSR, 스트레스 금리)를 미리 확인해보세요.
         </p>
       </section>
-
-      {/* 상단 광고: Hero 섹션과 카드 메뉴 사이 (주목도 높음) */}
-      <AdSense
-        slot="3924893287"
-        label="Main Top Banner"
-        style={{ marginBottom: "3rem" }}
-      />
 
       <section className="calculator-cards">
         <div className="card">
@@ -95,7 +88,19 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 하단 광고: 페이지 끝 */}
+      <section className="home-info-section">
+        <h3>왜 이 사이트를 참고해야 하나요?</h3>
+        <ul>
+          <li>계산기 + 설명형 가이드를 함께 제공해 수치와 의미를 동시에 확인할 수 있습니다.</li>
+          <li>정책/규제 문구를 주기적으로 검수하고, 변경 시 계산기와 가이드를 함께 업데이트합니다.</li>
+          <li>특정 금융상품 가입 유도가 아닌 비교·이해 중심의 정보만 제공합니다.</li>
+        </ul>
+        <p>
+          자세한 운영 원칙과 검수 정책은 <Link to="/about">사이트 소개/운영원칙</Link> 페이지에서
+          확인할 수 있습니다.
+        </p>
+      </section>
+
       <AdSense slot="2611811617" label="Main Bottom Banner" />
     </main>
   );
