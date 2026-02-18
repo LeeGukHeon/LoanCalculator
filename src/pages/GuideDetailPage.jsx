@@ -2,14 +2,26 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { guides } from "../data/guides";
 import ReactMarkdown from "react-markdown";
-import AdSense from "../components/common/AdSense"; // 광고 컴포넌트 추가
+import AdSense from "../components/common/AdSense";
 import "./GuideDetailPage.css";
+
+const GUIDE_META = {
+  "mortgage-complete-guide": { updatedAt: "2026-02-18", readTime: "8분" },
+  "credit-loan-guide": { updatedAt: "2026-02-18", readTime: "7분" },
+  "didimdol-loan-guide": { updatedAt: "2026-02-10", readTime: "6분" },
+  "bogeumjari-loan-guide": { updatedAt: "2026-02-10", readTime: "6분" },
+  "ltv-dti-dsr-guide": { updatedAt: "2026-02-12", readTime: "7분" },
+  "prepayment-strategy-guide": { updatedAt: "2026-02-12", readTime: "6분" },
+  "loan-refinancing-guide": { updatedAt: "2026-02-14", readTime: "6분" },
+  "interest-rate-cut-request-guide": { updatedAt: "2026-02-15", readTime: "5분" },
+  "credit-score-management-guide": { updatedAt: "2026-02-16", readTime: "7분" },
+};
 
 function GuideDetailPage() {
   const { id } = useParams();
   const guide = guides.find((g) => g.id === id);
+  const meta = GUIDE_META[id] || { updatedAt: "2026-02-01", readTime: "5분" };
 
-  // SEO: 가이드 제목에 맞춰 페이지 타이틀 변경
   useEffect(() => {
     if (guide) {
       document.title = `${guide.title} - 대출 계산기 가이드`;
@@ -31,19 +43,12 @@ function GuideDetailPage() {
     );
   }
 
-  // 📝 본문 중간 광고 삽입 로직
-  // 긴 마크다운 텍스트를 중간 지점에서 나누어 그 사이에 광고를 넣습니다.
   const renderContentWithAd = (content) => {
-    // 글이 너무 짧으면(800자 미만) 중간 광고 없이 출력
     if (content.length < 800) {
       return <ReactMarkdown>{content}</ReactMarkdown>;
     }
 
-    // 전체 길이의 약 50% 지점부터 탐색 시작
     const middleIndex = Math.floor(content.length / 2);
-
-    // 중간 지점 이후에 나오는 첫 번째 '문단 바꿈(\n\n)' 위치를 찾음
-    // 문단 사이가 아니라면 글자 중간에 광고가 들어가는 것을 방지
     const splitIndex = content.indexOf("\n\n", middleIndex);
 
     if (splitIndex !== -1) {
@@ -56,11 +61,10 @@ function GuideDetailPage() {
             <ReactMarkdown>{part1}</ReactMarkdown>
           </div>
 
-          {/* 🔥 본문 중간 광고 (In-Article Ad) */}
           <AdSense
             slot="7157221978"
             label="In-Article Banner"
-            format="fluid" // 본문 흐름에 맞게 자연스럽게 조절
+            format="fluid"
             style={{ margin: "3rem 0" }}
           />
 
@@ -71,7 +75,6 @@ function GuideDetailPage() {
       );
     }
 
-    // 나눌 적절한 위치를 못 찾았다면 그냥 출력
     return <ReactMarkdown>{content}</ReactMarkdown>;
   };
 
@@ -84,20 +87,21 @@ function GuideDetailPage() {
           </Link>
           <div className="guide-category-badge">{guide.category}</div>
           <h1>{guide.title}</h1>
+          <p style={{ color: "#6b7280", marginTop: "0.5rem" }}>
+            읽기 시간 {meta.readTime} · 최신 검수일 {meta.updatedAt}
+          </p>
         </div>
 
-        {/* 상단 광고: 제목 직후 높은 주목도 */}
-        <AdSense
-          slot="3924893287"
-          label="Top Banner"
-          style={{ marginBottom: "2rem" }}
-        />
-
-        <div className="guide-content">
-          {renderContentWithAd(guide.content)}
+        <div className="guides-container" style={{ marginBottom: "2rem" }}>
+          <p>
+            본 문서는 정보 제공을 위한 콘텐츠이며, 실제 심사 기준은 금융기관의 내부 정책에 따라
+            달라질 수 있습니다. 계산기로 수치를 확인한 뒤 은행 상담에서 최종 조건을 반드시
+            확인하세요.
+          </p>
         </div>
 
-        {/* 하단 광고: 본문 독파 후 */}
+        <div className="guide-content">{renderContentWithAd(guide.content)}</div>
+
         <AdSense slot="2611811617" label="Bottom Banner" />
 
         <div className="guide-footer">

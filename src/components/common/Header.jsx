@@ -27,16 +27,9 @@ function Header() {
           <Link to="/guides" className="nav-link">
             가이드
           </Link>
-
-          {/* 🔥 [추가됨] 월급계산기 홍보 링크 */}
-          <a
-            href="https://mysalarycalc.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link promo-link"
-          >
-            💰 2026 월급계산기
-          </a>
+          <Link to="/about" className="nav-link">
+            운영원칙
+          </Link>
         </nav>
       </div>
     </header>
